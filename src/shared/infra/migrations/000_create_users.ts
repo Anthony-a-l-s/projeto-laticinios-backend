@@ -5,7 +5,7 @@ export async function up (knex: Knex ){
         table.increments('id').primary();
         table.string('name').notNullable();
         table.string('mail').notNullable();
-        table.string('phone_numbe').notNullable();
+        table.string('phone_number').notNullable();
         table.string('cpf').notNullable();
         table.string('password').notNullable();
         table.timestamps(true, true);

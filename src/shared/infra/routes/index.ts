@@ -14,7 +14,7 @@ import { ensureConsultoriaFisica } from '../http/middlewares/ensureConsultoriaFi
 const routes = express.Router()
 
 //CONTROLLERS
-const UserController = require('../../../modules/controllers/UsersController')
+const UserController = require('../controllers/UsersController')
 const AddressController = require('../../../modules/controllers/AddressesController')
 const LoginController = require('../../../modules/controllers/LoginsController')
 const TypePersonController = require('../../../modules/controllers/TypePersonsController')
@@ -27,11 +27,11 @@ const Responsibles_Technician_Quality_Control_Crmv = require('../../../modules/c
 const ConsultancyController = require('../../../modules/controllers/ConsultancysController')
 const TaxAuditorController = require('../../../modules/controllers/TaxAuditorsController') 
 const AuthenticationController = require('../../../modules/controllers/AuthenticationController')
-const checklistController = require('../../../modules/controllers/checklistController')
+const checklistController = require('../controllers/ChecklistController')
 const QuestionsController = require('../../../modules/controllers/QuestionsController')
 const RespostasController = require('../../../modules/controllers/RespostasController')
 const ResponseImagesController = require('../../../modules/controllers/ResponseImagesController')
-const TopicsController = require("../../../modules/controllers/TopicsController")
+const TopicsController = require("../controllers/TopicsController")
 const PerfilController = require('../../../modules/controllers/PerfilController')
 const EntityController = require('../../../modules/controllers/EntityController')
 const CompanyController = require('../../../modules/controllers/CompanyController')
@@ -51,10 +51,10 @@ routes.put("/login/:loginId", LoginController.update)
 routes.delete("/login/:loginId", LoginController.delete)
 
 //USER ROUTES
-routes.get("/users",ensureAdmin ,UserController.index)
-routes.post("/users/:loginId", UserController.create)
-routes.put("/users/:userId", UserController.update)
-routes.delete("/users/:userId", UserController.delete)
+routes.get("/users",/*ensureAdmin ,*/UserController.index)
+routes.post("/users_create", UserController.create)
+//routes.put("/users/:userId", UserController.update)
+//routes.delete("/users/:userId", UserController.delete)
 
 //PERFILS
 routes.post('/perfil/:userId/:loginId',cors(),PerfilController.perfilCreation)
@@ -68,16 +68,16 @@ routes.delete("/entity/:entityId", EntityController.delete)
 //CHECKLIST ROUTES
 routes.get('/checklists', ensureAuditorFiscal,checklistController.index)
 //Pegando os dados de um checklist especifico pelo id
-routes.get('/checklists/:checklistId' ,checklistController.UmChecklist)
-routes.post("/checklists/:userId", checklistController.create)
-routes.put("/checklists/:checklistId", checklistController.update)
-routes.delete("/checklists/:checklistId", checklistController.delete)
+routes.get('/checklists/:checklist_Id' ,checklistController.UmChecklist)
+routes.post("/checklists/:user_id", checklistController.create)
+routes.put("/checklists_edit/:id", checklistController.update)
+routes.delete("/checklists/:id", checklistController.delete)
 
 //topic routes
 routes.get('/topics', TopicsController.index)
 //Pegando os topicos de um checklist
-routes.get('/topics/:checklistId', TopicsController.lista)
-routes.post("/topics/:checklistId", TopicsController.create)
+routes.get('/topics/:checklist_id', TopicsController.lista)
+routes.post("/topics_create/:checklist_id", TopicsController.create)
 routes.put("/topics/:topicId", TopicsController.update)
 routes.delete("/topics/:topicId", TopicsController.delete)
 

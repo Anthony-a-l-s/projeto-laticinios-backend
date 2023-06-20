@@ -7,6 +7,8 @@ export async function up (knex: Knex ){
         table.text('description').notNullable();
         table.string('status').notNullable();
         table.boolean('active').notNullable();
+        table.integer('user_id').notNullable().unsigned();
+        table.foreign('user_id').references('users.id');
         table.timestamps(true, true);
     });
 }
