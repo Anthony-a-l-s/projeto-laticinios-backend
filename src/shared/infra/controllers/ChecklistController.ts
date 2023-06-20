@@ -6,7 +6,7 @@ module.exports = {
     async index(req: Request, res: Response) {
 
 
-        const result = await knex('checklist')
+        const result = await knex('checklists')
 
         return res.json(result)
 
@@ -14,9 +14,9 @@ module.exports = {
 
     //funcao para pegar os dados de um checklist dado o id dele
     async UmChecklist(req: Request, res: Response) {
-        const { checklistId } = req.params
+        const { id } = req.params
 
-        const result = await knex('checklist').where({ checklistId })
+        const result = await knex('checklists').where({ id })
 
         return res.json(result)
 
@@ -29,7 +29,6 @@ module.exports = {
         try {
             const { title, description, status, active } = req.body
             const { user_id } = req.params
-            console.log('console.log')
             await knex('checklists').insert({
                 title,
                 description,
@@ -37,7 +36,6 @@ module.exports = {
                 active,
                 user_id,
             })
-            console.log('console.log2')
             const checklist = {
                 title,
                 description,

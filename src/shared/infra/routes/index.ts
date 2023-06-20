@@ -28,7 +28,7 @@ const ConsultancyController = require('../../../modules/controllers/Consultancys
 const TaxAuditorController = require('../../../modules/controllers/TaxAuditorsController') 
 const AuthenticationController = require('../../../modules/controllers/AuthenticationController')
 const checklistController = require('../controllers/ChecklistController')
-const QuestionsController = require('../../../modules/controllers/QuestionsController')
+const QuestionsController = require('../controllers/QuestionsController')
 const RespostasController = require('../../../modules/controllers/RespostasController')
 const ResponseImagesController = require('../../../modules/controllers/ResponseImagesController')
 const TopicsController = require("../controllers/TopicsController")
@@ -39,6 +39,9 @@ const ProductcategoryController = require('../../../modules/controllers/ProductC
 const ProductProviderController = require('../../../modules/controllers/ProductProviderController')
 const ProductsController = require('../../../modules/controllers/ProductsController')
 const InstrumentController = require('../../../modules/controllers/InstrumentController')
+const PdaRefTableController = require('../controllers/PdaRefTableControler')
+const PdaTableController = require('../controllers/PdaTableController')
+
 
 var cors = require('cors')
 const uploadResponsesImages = multer(uploadConfig.upload("./tmp/responseImages"));
@@ -66,9 +69,9 @@ routes.put("/entity/:entityId", EntityController.update)
 routes.delete("/entity/:entityId", EntityController.delete)
 
 //CHECKLIST ROUTES
-routes.get('/checklists', ensureAuditorFiscal,checklistController.index)
+routes.get('/checklists'/*,ensureAuditorFiscal*/,checklistController.index)
 //Pegando os dados de um checklist especifico pelo id
-routes.get('/checklists/:checklist_Id' ,checklistController.UmChecklist)
+routes.get('/checklists/:id' ,checklistController.UmChecklist)
 routes.post("/checklists/:user_id", checklistController.create)
 routes.put("/checklists_edit/:id", checklistController.update)
 routes.delete("/checklists/:id", checklistController.delete)
@@ -80,6 +83,20 @@ routes.get('/topics/:checklist_id', TopicsController.lista)
 routes.post("/topics_create/:checklist_id", TopicsController.create)
 routes.put("/topics/:topicId", TopicsController.update)
 routes.delete("/topics/:topicId", TopicsController.delete)
+
+//PDA_REF_TABLE ROUTES
+routes.get("/pda_ref_tables", PdaRefTableController.index)
+routes.get("/pda_ref_tables/:id", PdaRefTableController.umPdaRefTable)
+routes.post("/pda_ref_tables", PdaRefTableController.create)
+routes.put("/pda_ref_tables/:id", PdaRefTableController.update)
+routes.delete("/pda_ref_tables/:id", PdaRefTableController.delete)
+
+//PDA_TABLE ROUTES
+routes.get("/pda_tables", PdaTableController.index)
+routes.get("/pda_tables/:id", PdaTableController.UmPdaTable)
+routes.post("/pda_tables", PdaTableController.create)
+routes.put("/pda_tables/:id", PdaTableController.update)
+routes.delete("/pda_ref_tables/:id", PdaTableController.delete)
 
 
 //QUESTIONS ROUTES

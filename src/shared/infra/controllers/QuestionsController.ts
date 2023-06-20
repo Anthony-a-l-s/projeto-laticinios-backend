@@ -2,34 +2,35 @@ import { Request, Response } from "express";
 const knex = require('../knex/connection');
 
 module.exports = {
-
+    //Para pegar todos as perguntas
     async index(req: Request, res: Response) {
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
         res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
-        const result = await knex('topics')
+        const result = await knex('question')
 
         return res.json(result)
 
     },
 
-
-    async lista(req: Request, res: Response) {
+    //Para pegar as perguntas de um topico
+    async questionsOfAnTopic(req: Request, res: Response) {
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
         res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
-        const { checklist_id } = req.params
+        const { topicId } = req.params
 
-        const result = await knex('topics').where({ checklist_id })
+        const result = await knex('question').where({ topicId })
 
-        return res.json(result)
+        return res.json(result).status(200)
 
     },
 
+    //Para criar todos as perguntas
     async create(req: Request, res: Response, next: any) {
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
@@ -37,16 +38,20 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { title, description, status, active } = req.body
-            const { checklist_id } = req.params
+            const { title, description, status, value, active, comment, } = req.body
+            const { topic_id, pda_table_id } = req.params
 
-            await knex('topics').insert({
+
+            await knex('questions').insert({
                 title,
                 description,
                 status,
+                value,
                 active,
-                checklist_id,
-            })//.where(checklist_id)
+                comment,
+                topic_id,
+                pda_table_id
+            }).where({ topic_id })
 
             return res.status(201).send()
         } catch (error) {
@@ -54,6 +59,8 @@ module.exports = {
         }
     },
 
+
+    //Para atualizar uma pergunta
     async update(req: Request, res: Response, next: any) {
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
@@ -61,16 +68,24 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { title, description, status, active, } = req.body
-            const { topicId } = req.params
+            const { title,
+                description,
+                status,
+                value,
+                active,
+                comment, } = req.body
+            const { questionId } = req.params
 
-            await knex('topics')
+            await knex('question')
                 .update({
                     title,
                     description,
                     status,
+                    value,
                     active,
-                }).where({ id: topicId })
+                    comment
+                })
+                .where({ questionId })
 
             return res.status(200).send()
         } catch (error) {
@@ -78,8 +93,7 @@ module.exports = {
         }
     },
 
-
-
+    //Para apagar uma pergunta
     async delete(req: Request, res: Response, next: any) {
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
@@ -87,10 +101,10 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { topicId } = req.params
+            const { questionId } = req.params
 
-            await knex('topics')
-                .where({ id: topicId })
+            await knex('question')
+                .where({ questionId })
                 .del()
 
             return res.send()
@@ -100,4 +114,3 @@ module.exports = {
     },
 
 }
-
