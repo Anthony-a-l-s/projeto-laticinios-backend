@@ -12,9 +12,9 @@ module.exports = {
     },
 
     async UmPdaTable(req: Request, res: Response) {
-        const { id } = req.params
+        const { pdaTableId } = req.params
 
-        const result = await knex('pda_tables').where({ id })
+        const result = await knex('pda_tables').where({ id_pda_table: pdaTableId })
 
         return res.json(result)
 
@@ -23,17 +23,17 @@ module.exports = {
     async create(req: Request, res: Response, next: any) {
 
         try {
-            const { pda_ref_table_id } = req.params
-            const { respomsible, funct } = req.body
+            const { pdaRefTableId } = req.params
+            const { responsible, funct } = req.body
             await knex('pda_tables').insert({
-                respomsible,
+                responsible,
                 funct,
-                pda_ref_table_id,
+                id_pda_ref_table: pdaRefTableId,
             })
             const pdaTable = {
-                respomsible,
+                responsible,
                 funct,
-                pda_ref_table_id
+                pdaRefTableId
             }
             return res.status(201).json(pdaTable)
         } catch (error) {
@@ -43,15 +43,16 @@ module.exports = {
 
     async update(req: Request, res: Response, next: any) {
         try {
-            const { respomsible,funct} = req.body
-            const { id } = req.params
+            const { responsible, funct } = req.body
+            console.log(responsible + ' ' + funct)
+            const { pdaTableId } = req.params
             await knex('pda_tables')
                 .update({
-                    respomsible,
+                    responsible,
                     funct,
                 })
-                .where({ id })
-            return res.status(200).send()
+                .where({ id_pda_table: pdaTableId })
+            return res.status(200).json("PDA ceditado com sucesso")
         } catch (error) {
             next(error)
         }
@@ -60,12 +61,12 @@ module.exports = {
     async delete(req: Request, res: Response, next: any) {
 
         try {
-            const { id } = req.params
+            const { pdaTableId } = req.params
             await knex('pda_tables')
-                .where({ id })
+                .where({ id_pda_table: pdaTableId })
                 .del()
 
-            return res.send()
+                return res.status(200).json("PDA excluído com sucesso")
         } catch (error) {
             next(error)
         }

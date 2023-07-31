@@ -2,17 +2,17 @@ import {Knex} from 'knex';
 
 export async function up (knex: Knex ){
     return  knex.schema.createTable('calibration_control', table => {
-        table.increments('id').primary();
+        table.increments('id_calibration_control').primary();
         table.string('instrument_name').notNullable();
         table.boolean('active').notNullable();
         table.string('ifnfo_isntrument').notNullable();
         table.string('identification_code').notNullable();
-        table.string('calibration_date').notNullable();
-        table.string('formatted_calibration_date').notNullable();
+        table.date('calibration_date').notNullable();
+        table.date('formatted_calibration_date').notNullable();
         table.date('next_calibration_date');
         table.date('next_formatted_calibration_date');  
-        table.date('calibrated_company_name').notNullable(); 
-        table.date('cnpj_calibrated_company').notNullable();     
+        table.string('calibrated_company_name').notNullable(); 
+        table.string('cnpj_calibrated_company').notNullable();     
     });
 }
 

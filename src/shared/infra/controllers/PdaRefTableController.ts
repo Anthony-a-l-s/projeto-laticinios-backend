@@ -12,9 +12,9 @@ module.exports = {
     },
 
     async umPdaRefTable(req: Request, res: Response) {
-        const { id } = req.params
+        const { pdaRefTableId } = req.params
 
-        const result = await knex('pda_ref_tables').where({ id })
+        const result = await knex('pda_ref_tables').where({ id_pda_ref_table :pdaRefTableId })
 
         return res.json(result)
 
@@ -39,13 +39,13 @@ module.exports = {
     async update(req: Request, res: Response, next: any) {
         try {
             const { pda } = req.body
-            const { id } = req.params
+            const { pdaRefTableId } = req.params
             await knex('pda_ref_tables')
                 .update({
                     pda
                 })
-                .where({ id })
-            return res.status(200).send()
+                .where({ id_pda_ref_table: pdaRefTableId })
+            return res.status(200).json("ref PDA editado com sucesso!")
         } catch (error) {
             next(error)
         }
@@ -54,12 +54,12 @@ module.exports = {
     async delete(req: Request, res: Response, next: any) {
 
         try {
-            const { id } = req.params
+            const { pdaRefTableId } = req.params
             await knex('pda_ref_tables')
-                .where({ id })
+                .where({ id_pda_ref_table: pdaRefTableId })
                 .del()
 
-            return res.send()
+            return res.status(200).json("ref PDA excluído com sucesso!")
         } catch (error) {
             next(error)
         }

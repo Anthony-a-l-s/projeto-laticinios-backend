@@ -9,7 +9,7 @@ module.exports = {
         res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
-        const result = await knex('question')
+        const result = await knex('questions')
 
         return res.json(result)
 
@@ -24,7 +24,21 @@ module.exports = {
         res.header('Access-Control-Max-Age', '86400')
         const { topicId } = req.params
 
-        const result = await knex('question').where({ topicId })
+        const result = await knex('questions').where({ id_topic: topicId })
+
+        return res.json(result).status(200)
+
+    },
+
+    async oneQuestion(req: Request, res: Response) {
+        res.header('Access-Control-Allow-Origin', '*')
+        res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+        res.header('Access-Control-Allow-Credentials', 'true')
+        res.header('Access-Control-Max-Age', '86400')
+        const { questionId } = req.params
+
+        const result = await knex('questions').where({ id_question: questionId })
 
         return res.json(result).status(200)
 
@@ -38,9 +52,8 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { title, description, status, value, active, comment, } = req.body
-            const { topic_id, pda_table_id } = req.params
-
+            const { title, description, status, value, active, comment, id_pda_table } = req.body
+            const { topicId } = req.params
 
             await knex('questions').insert({
                 title,
@@ -49,11 +62,21 @@ module.exports = {
                 value,
                 active,
                 comment,
-                topic_id,
-                pda_table_id
-            }).where({ topic_id })
+                id_topic: topicId,
+                id_pda_table,
+            }).where({ topicId })
 
-            return res.status(201).send()
+            const question = {
+                title,
+                description,
+                status,
+                value,
+                active,
+                comment,
+                topicId,
+                id_pda_table
+            }
+            return res.status(201).json(question)
         } catch (error) {
             next(error)
         }
@@ -68,15 +91,17 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { title,
+            const { 
+                title,
                 description,
                 status,
                 value,
                 active,
-                comment, } = req.body
+                comment
+             } = req.body
             const { questionId } = req.params
 
-            await knex('question')
+            await knex('questions')
                 .update({
                     title,
                     description,
@@ -85,9 +110,9 @@ module.exports = {
                     active,
                     comment
                 })
-                .where({ questionId })
+                .where({ id_question: questionId })
 
-            return res.status(200).send()
+            return res.status(200).json('Pergunta editada com sucesso')
         } catch (error) {
             next(error)
         }
@@ -103,11 +128,11 @@ module.exports = {
         try {
             const { questionId } = req.params
 
-            await knex('question')
-                .where({ questionId })
+            await knex('questions')
+                .where({id_question: questionId })
                 .del()
 
-            return res.send()
+                return res.status(200).json('Pergunta excluída com sucesso')
         } catch (error) {
             next(error)
         }

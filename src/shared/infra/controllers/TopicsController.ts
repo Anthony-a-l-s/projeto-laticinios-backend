@@ -22,9 +22,9 @@ module.exports = {
         res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
-        const { checklist_id } = req.params
+        const { checklistId } = req.params
 
-        const result = await knex('topics').where({ checklist_id })
+        const result = await knex('topics').where({ id_checklist: checklistId })
 
         return res.json(result)
 
@@ -38,17 +38,23 @@ module.exports = {
         res.header('Access-Control-Max-Age', '86400')
         try {
             const { title, description, status, active } = req.body
-            const { checklist_id } = req.params
+            const { checklistId} = req.params
 
             await knex('topics').insert({
                 title,
                 description,
                 status,
-                active,
-                checklist_id,
-            })//.where(checklist_id)
-
-            return res.status(201).send()
+                active, 
+                id_checklist: checklistId,
+            })
+            const topic = {
+                title,
+                description,
+                status,
+                active, 
+                checklistId, 
+            }
+            return res.status(200).json(topic)
         } catch (error) {
             next(error)
         }
@@ -70,9 +76,9 @@ module.exports = {
                     description,
                     status,
                     active,
-                }).where({ id: topicId })
+                }).where({ id_topic: topicId })
 
-            return res.status(200).send()
+            return res.status(200).json('Tópico editado com sucesso!')
         } catch (error) {
             next(error)
         }
@@ -90,10 +96,10 @@ module.exports = {
             const { topicId } = req.params
 
             await knex('topics')
-                .where({ id: topicId })
+                .where({ id_topic: topicId })
                 .del()
 
-            return res.send()
+            return res.status(200).json('Tópico excluído com sucesso!')
         } catch (error) {
             next(error)
         }

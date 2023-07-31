@@ -39,9 +39,13 @@ const ProductcategoryController = require('../../../modules/controllers/ProductC
 const ProductProviderController = require('../../../modules/controllers/ProductProviderController')
 const ProductsController = require('../../../modules/controllers/ProductsController')
 const InstrumentController = require('../../../modules/controllers/InstrumentController')
-const PdaRefTableController = require('../controllers/PdaRefTableControler')
+const PdaRefTableController = require('../controllers/PdaRefTableController')
 const PdaTableController = require('../controllers/PdaTableController')
-
+const CalibrationControlController = require('../../infra/controllers/CalibrationControlController')
+const StockCategoriesController = require('../controllers/StockCategoriesController')
+const StockItemsComntroller = require('../controllers/StockItemsController')
+const ProfileController = require('../controllers/ProfileController')
+const QestionImagesController = require('../controllers/QuestionImagesController')
 
 var cors = require('cors')
 const uploadResponsesImages = multer(uploadConfig.upload("./tmp/responseImages"));
@@ -55,12 +59,19 @@ routes.delete("/login/:loginId", LoginController.delete)
 
 //USER ROUTES
 routes.get("/users",/*ensureAdmin ,*/UserController.index)
+routes.get("/user/:userId",UserController.umUser)
 routes.post("/users_create", UserController.create)
-//routes.put("/users/:userId", UserController.update)
-//routes.delete("/users/:userId", UserController.delete)
+routes.put("/user_edit/:userId", UserController.update)
+routes.delete("/user_delete/:userId", UserController.delete)
 
 //PERFILS
-routes.post('/perfil/:userId/:loginId',cors(),PerfilController.perfilCreation)
+routes.post('/perfile/:userId/:loginId',cors(),ProfileController.perfilCreation)
+routes.get("/profiles",/*ensureAdmin ,*/ProfileController.index)
+routes.get("/profile/:profileId", ProfileController.oneProfile)
+routes.get("/profile_users/:userId", ProfileController.profilesByUser)
+routes.post("/profile_create/:userId", ProfileController.create)
+routes.put("/profile_edit/:profileId", ProfileController.update)
+routes.delete("/perfil_delete/:profileId", ProfileController.delete)
 
 //Entities ROUTES
 routes.get("/entity", ensureConsultoriaFisica, EntityController.index)
@@ -71,41 +82,73 @@ routes.delete("/entity/:entityId", EntityController.delete)
 //CHECKLIST ROUTES
 routes.get('/checklists'/*,ensureAuditorFiscal*/,checklistController.index)
 //Pegando os dados de um checklist especifico pelo id
-routes.get('/checklists/:id' ,checklistController.UmChecklist)
-routes.post("/checklists/:user_id", checklistController.create)
-routes.put("/checklists_edit/:id", checklistController.update)
-routes.delete("/checklists/:id", checklistController.delete)
+routes.get('/checklists/:checklistId' ,checklistController.UmChecklist)
+routes.post("/checklists_create/:userId", checklistController.create)
+routes.put("/checklists_edit/:checklistId", checklistController.update)
+routes.delete("/checklists_delete/:checklistId", checklistController.delete)
 
-//topic routes
+//TOPIC ROUTES
 routes.get('/topics', TopicsController.index)
 //Pegando os topicos de um checklist
-routes.get('/topics/:checklist_id', TopicsController.lista)
-routes.post("/topics_create/:checklist_id", TopicsController.create)
-routes.put("/topics/:topicId", TopicsController.update)
-routes.delete("/topics/:topicId", TopicsController.delete)
+routes.get('/topics/:checklistId', TopicsController.lista)
+routes.post("/topics_create/:checklistId", TopicsController.create)
+routes.put("/topics_edit/:topicId", TopicsController.update)
+routes.delete("/topics_delete/:topicId", TopicsController.delete)
 
 //PDA_REF_TABLE ROUTES
 routes.get("/pda_ref_tables", PdaRefTableController.index)
-routes.get("/pda_ref_tables/:id", PdaRefTableController.umPdaRefTable)
+routes.get("/pda_ref_tables/:pdaRefTableId", PdaRefTableController.umPdaRefTable)
 routes.post("/pda_ref_tables", PdaRefTableController.create)
-routes.put("/pda_ref_tables/:id", PdaRefTableController.update)
-routes.delete("/pda_ref_tables/:id", PdaRefTableController.delete)
+routes.put("/pda_ref_tables/:pdaRefTableId", PdaRefTableController.update)
+routes.delete("/pda_ref_tables/:pdaRefTableId", PdaRefTableController.delete)
 
 //PDA_TABLE ROUTES
 routes.get("/pda_tables", PdaTableController.index)
-routes.get("/pda_tables/:id", PdaTableController.UmPdaTable)
-routes.post("/pda_tables", PdaTableController.create)
-routes.put("/pda_tables/:id", PdaTableController.update)
-routes.delete("/pda_ref_tables/:id", PdaTableController.delete)
+routes.get("/pda_tables/:pdaTableId", PdaTableController.UmPdaTable)
+routes.post("/pda_tables_create/:pdaRefTableId", PdaTableController.create)
+routes.put("/pda_tables_edit/:pdaTableId", PdaTableController.update)
+routes.delete("/pda_tables_delete/:pdaTableId", PdaTableController.delete)
 
 
 //QUESTIONS ROUTES
-routes.get("/questions", QuestionsController.index)
+routes.get("/allQuestions", QuestionsController.index)
 //Pegando as perguntas de um topico
 routes.get("/questions/:topicId", QuestionsController.questionsOfAnTopic)
-routes.post("/questions/:topicId", QuestionsController.create)
-routes.put("/questions/:questionId", QuestionsController.update)
-routes.delete("/questions/:questionId", QuestionsController.delete)
+routes.get("/question/:questionId", QuestionsController.oneQuestion)
+routes.post("/questions_create/:topicId", QuestionsController.create)
+routes.put("/questions_edit/:questionId", QuestionsController.update)
+routes.delete("/question_delete/:questionId", QuestionsController.delete)
+
+//QUESTIONS IMAGES ROUTES
+routes.get("/questions_images", QestionImagesController.index)
+//Pegando as imagens de uma pergunta
+routes.get("/questions_images/:questionId", QestionImagesController.imagesforQuestion)
+routes.get("/questions_images/:questionImageId", QestionImagesController.oneQestionImage)
+routes.post("/questions_images/:questionId", QestionImagesController.create)
+routes.put("/questions_images/:questionImageId", QuestionsController.update)
+routes.delete("/questions_images/:questionImageId", QuestionsController.delete)
+
+//CALIBRATION CONTROL ROUTES
+routes.get("/calibration_controls", CalibrationControlController.index)
+routes.get("/calibration_control/:calibrationControlId", CalibrationControlController.UmCalibrationControl)
+routes.post("/calibration_control/", CalibrationControlController.create)
+routes.put("/calibration_control_edit/:calibrationControlId", CalibrationControlController.update)
+routes.delete("/calibration_control_delete/:calibrationControlId", CalibrationControlController.delete)
+
+//STOCK CATEGORIES ROUTES
+routes.get("/stock_categories", StockCategoriesController.index)
+routes.get("/stock_category/:stockCategoryId", StockCategoriesController.UmStockCategory)
+routes.post("/stock_category_create/", StockCategoriesController.create)
+routes.put("/stock_category_edit/:stockCategoryId", StockCategoriesController.update)
+routes.delete("/stock_category_delete/:stockCategoryId", StockCategoriesController.delete)
+
+//STOCK ITEMS ROUTES
+routes.get("/stock_items", StockItemsComntroller.index)
+routes.get("/stock_item/:stockItemId", StockItemsComntroller.UmStockItem)
+routes.get("/stock_items/:stockCategoryId", StockItemsComntroller.stockItemByCategory)
+routes.post("/stock_items_create/", StockItemsComntroller.create)
+routes.put("/stock_items_edit/:stockItemId", StockItemsComntroller.update)
+routes.delete("/stock_items_delete/:stockItemId", StockItemsComntroller.delete)
 
 //RESPONSES ROUTES
 routes.get("/responses", RespostasController.index)

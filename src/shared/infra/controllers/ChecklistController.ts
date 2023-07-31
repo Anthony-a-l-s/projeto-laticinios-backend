@@ -14,9 +14,9 @@ module.exports = {
 
     //funcao para pegar os dados de um checklist dado o id dele
     async UmChecklist(req: Request, res: Response) {
-        const { id } = req.params
+        const { checklistId } = req.params
 
-        const result = await knex('checklists').where({ id })
+        const result = await knex('checklists').where({ id_checklist: checklistId })
 
         return res.json(result)
 
@@ -28,20 +28,20 @@ module.exports = {
 
         try {
             const { title, description, status, active } = req.body
-            const { user_id } = req.params
+            const { userId } = req.params
             await knex('checklists').insert({
                 title,
                 description,
                 status,
                 active,
-                user_id,
+                id_user: userId,
             })
             const checklist = {
                 title,
                 description,
                 status,
                 active,
-                user_id,
+                userId,
             }
             return res.status(201).json(checklist)
         } catch (error) {
@@ -54,7 +54,7 @@ module.exports = {
     async update(req: Request, res: Response, next: any) {
         try {
             const { title,description, status, active } = req.body
-            const { id } = req.params
+            const { checklistId } = req.params
             await knex('checklists')
                 .update({
                     title,
@@ -62,8 +62,8 @@ module.exports = {
                     status,
                     active,
                 })
-                .where({ id })
-            return res.status(200).send()
+                .where({ id_checklist: checklistId })
+            return res.status(200).json('Checklist edidado com sucesso')
         } catch (error) {
             next(error)
         }
@@ -73,13 +73,13 @@ module.exports = {
     async delete(req: Request, res: Response, next: any) {
 
         try {
-            const { id } = req.params
+            const { checklistId } = req.params
 
             await knex('checklists')
-                .where({ id })
+                .where({ id_checklist: checklistId })
                 .del()
 
-            return res.send()
+            return res.status(200).json('Checklist excluído com sucesso')
         } catch (error) {
             next(error)
         }

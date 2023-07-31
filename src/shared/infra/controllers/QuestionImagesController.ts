@@ -1,37 +1,50 @@
 import { Request, Response } from "express";
-const knex = require('../../infra/knex/connection');
+const knex = require('../knex/connection');
 
 module.exports = {
-
-            //funcao para listar todos os usuarios cadastrados 
+    //Para pegar todos as perguntas
     async index(req: Request, res: Response) {
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
         res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
-        const result = await knex('users')
+        const result = await knex('question_inamges')
 
         return res.json(result)
 
     },
 
-    async umUser(req: Request, res: Response) {
+    //Para pegar as perguntas de um topico
+    async imagesforQuestion(req: Request, res: Response) {
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
         res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
-        const { userId } = req.params
-        console.log(userId)
-        const result = await knex('users').where({ id_user: userId })
+        const { questionId } = req.params
 
-        return res.json(result)
+        const result = await knex('question_inamges').where({ topic_id: questionId})
+
+        return res.json(result).status(200)
 
     },
 
+    async oneQestionImage(req: Request, res: Response) {
+        res.header('Access-Control-Allow-Origin', '*')
+        res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+        res.header('Access-Control-Allow-Credentials', 'true')
+        res.header('Access-Control-Max-Age', '86400')
+        const { questionImageId } = req.params
 
-            //funcao de cadastro de usuario
+        const result = await knex('question_inamges').where({ id_question_inamge: questionImageId })
+
+        return res.json(result).status(200)
+
+    },
+
+    //Para criar todos as perguntas
     async create(req: Request, res: Response, next: any) {
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
@@ -39,33 +52,28 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { name, mail, phone_number, cpf, password,active, cnpj, address, register_number, ocupation } = req.body
-            //const { loginId } = req.params
-            const user = await knex('users').insert({
-                name,
-                mail,
-                phone_number, 
-                cpf,
-                password,
-                active
+            const { base64, url } = req.body
+            const { questionId } = req.params
+
+            await knex('question_inamges').insert({
+               base64,
+               url,
+               id_question: questionId, 
             })
-           
-            const register ={
-                name,
-                mail,
-                phone_number, 
-                cpf,
-                password,
-                active,
+
+            const question = {
+                base64,
+                url,
+                questionId,
             }
-            return res.status(201).json(register)
+            return res.status(201).json(question)
         } catch (error) {
-            console.log(error)
             next(error)
         }
     },
 
-            //funcao para atualizar os dados dum usuario cadasrtrado
+
+    //Para atualizar uma pergunta
     async update(req: Request, res: Response, next: any) {
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
@@ -73,28 +81,26 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { name, mail, phone_number, cpf, password,active } = req.body
-            const { userId } = req.params
+            const { 
+                base64,
+                url,
+             } = req.body
+            const { questionImageId } = req.params
 
-            await knex('users')
+            await knex('question_inamges')
                 .update({
-                    name,
-                    mail,
-                    phone_number, 
-                    cpf,
-                    password,
-                    active
+                    base64,
+                    url,
                 })
-                .where({ id_user: userId })
+                .where({ id_question_inamge: questionImageId })
 
-            return res.status(200).json("usuário editado feita com sucesso")
+            return res.status(200).json('Imagem editada com sucesso')
         } catch (error) {
             next(error)
         }
     },
 
-
-    //Funcao para excluir um usuario
+    //Para apagar uma pergunta
     async delete(req: Request, res: Response, next: any) {
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
@@ -102,13 +108,12 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { userId } = req.params
+            const { questionImageId } = req.params
 
-            await knex('users')
-                .where({ id_user: userId })
+            await knex('question_inamges')
+                .where({id_question_inamge: questionImageId })
                 .del()
-
-            return res.status(200).json("Usuário excluído som sucesso")
+                return res.status(200).json('Imagem excluída com sucesso')
         } catch (error) {
             next(error)
         }
