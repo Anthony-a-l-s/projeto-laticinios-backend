@@ -4,6 +4,7 @@ import { AppError } from "../../errors/AppErrors";
 const knex = require('../knex/connection')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+require('dotenv').config
 
 //Tipo de retorno da funcao abaixo
 interface IResponse {
@@ -19,31 +20,31 @@ module.exports = {
         const { name } = request.body
         const { loginId, userId } = request.params
 
-         //Verificando se o perfil existe
-         let ifNameExist = await knex.select('name').from('Entity').where({ name: name, userId: userId })
+        //Verificando se o perfil existe
+        let ifNameExist = await knex.select('name').from('Entity').where({ name: name, userId: userId })
 
-         //Messagem de erro caso nao existe
-         if (!ifNameExist) {
-                 
-             throw new AppError("Esse perfil nao existe");
-         }
- 
-         //Pegando email do usuario
-         const userEmail = await knex.select('email').from('login').where({ loginId })
- 
-         ///Pegando as informacoes do usuario logado
-         const usuario = await knex('users').where({ userId: userId })
+        //Messagem de erro caso nao existe
+        if (!ifNameExist) {
 
-         //Criando o token de authenticacao
-         const token = sign({userId: userId, perfil: name}, "f968930f67be264f2c1bfb80adf27ba7", {
-             expiresIn: "1d"
-         });
+            throw new AppError("Esse perfil nao existe");
+        }
 
-         request.user = {
-             id: userId
-         }
+        //Pegando email do usuario
+        const userEmail = await knex.select('email').from('login').where({ loginId })
 
-         console.log(request.user)
+        ///Pegando as informacoes do usuario logado
+        const usuario = await knex('users').where({ userId: userId })
+
+        //Criando o token de authenticacao
+        const token = sign({ userId: userId, perfil: name }, "f968930f67be264f2c1bfb80adf27ba7", {
+            expiresIn: "1d"
+        });
+
+        request.user = {
+            id: userId
+        }
+
+        console.log(request.user)
         //Retornando o token, o perfil do usuario logado e as informacoes daquele usuario
         const tokenReturn: IResponse = {
             token,
@@ -54,7 +55,7 @@ module.exports = {
         return res.status(200).json(tokenReturn);
     },
 
-            //funcao para listar todos os usuarios cadastrados 
+    //funcao para listar todos os usuarios cadastrados 
     async index(req: Request, res: Response) {
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
@@ -72,8 +73,8 @@ module.exports = {
         res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
-        const {profileId} = req.params
-        const result = await knex('profiles').where({id_profile : profileId})
+        const { profileId } = req.params
+        const result = await knex('profiles').where({ id_profile: profileId })
 
         return res.json(result)
 
@@ -84,14 +85,14 @@ module.exports = {
         res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
-        const {userId} = req.params
-        const result = await knex('profiles').where({id_user: userId})
+        const { userId } = req.params
+        const result = await knex('profiles').where({ id_user: userId })
 
         return res.json(result)
 
     },
 
-            //funcao de cadastro de usuario
+    //funcao de cadastro de usuario
     async create(req: Request, res: Response, next: any) {
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
@@ -122,7 +123,28 @@ module.exports = {
         }
     },
 
-            //funcao para atualizar os dados dum usuario cadasrtrado
+    async getToken(req: Request, res: Response, next: any) {
+        res.header('Access-Control-Allow-Origin', '*')
+        res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+        res.header('Access-Control-Allow-Credentials', 'true')
+        res.header('Access-Control-Max-Age', '86400')
+        try {
+            console.log('Alô galera de pião 2!')
+            const { profileId }  = req.params
+            const profile = await knex('profiles').where({ id_profile: profileId })
+            const jwtPayload = { admin: profile[0].ocupation }
+            //const token = jwt.sign(jwtPayload, process.env.DB_SECRET)
+            const token = sign({ userId: profile[0].id_profile, perfil: profile[0].ocupation }, "f968930f67be264f2c1bfb80adf27ba7", {
+                expiresIn: "1d"
+            });
+            return res.status(201).json(token)
+        } catch (error) {
+            next(error)
+        }
+    },
+
+    //funcao para atualizar os dados dum usuario cadasrtrado
     async update(req: Request, res: Response, next: any) {
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
@@ -130,7 +152,7 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const {cnpj, address, register_number, ocupation } = req.body
+            const { cnpj, address, register_number, ocupation } = req.body
             const { profileId } = req.params
             await knex('profiles')
                 .update({
@@ -139,7 +161,7 @@ module.exports = {
                     register_number,
                     ocupation
                 })
-                .where({id_profile: profileId })
+                .where({ id_profile: profileId })
 
             return res.status(200).json('Perfil editado com sucesso')
         } catch (error) {
@@ -158,7 +180,7 @@ module.exports = {
         try {
             const { profileId } = req.params
             await knex('profiles')
-                .where({ id_profile : profileId })
+                .where({ id_profile: profileId })
                 .del()
 
             return res.status(200).json('Perfil excluído com sucesso')

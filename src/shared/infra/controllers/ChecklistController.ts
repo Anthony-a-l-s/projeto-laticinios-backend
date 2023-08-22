@@ -53,7 +53,7 @@ module.exports = {
     //funcao para atualizar um checklist
     async update(req: Request, res: Response, next: any) {
         try {
-            const { title,description, status, active } = req.body
+            const { title,description, status, active} = req.body
             const { checklistId } = req.params
             await knex('checklists')
                 .update({
@@ -64,6 +64,21 @@ module.exports = {
                 })
                 .where({ id_checklist: checklistId })
             return res.status(200).json('Checklist edidado com sucesso')
+        } catch (error) {
+            next(error)
+        }
+    },
+
+    async responded(req: Request, res: Response, next: any) {
+        try {
+            const { id_user_responded } = req.body
+            const { checklistId } = req.params
+            await knex('checklists')
+                .update({
+                    id_user_responded
+                })
+                .where({ id_checklist: checklistId })
+            return res.status(200).json('Checklist respondido edidado com sucesso')
         } catch (error) {
             next(error)
         }

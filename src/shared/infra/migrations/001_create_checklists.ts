@@ -9,6 +9,7 @@ export async function up (knex: Knex ){
         table.boolean('active').notNullable();
         table.integer('id_user').notNullable().unsigned();
         table.foreign('id_user').references('users.id_user');
+        table.integer('id_user_responded');
         table.timestamps(true, true);
     });
 }

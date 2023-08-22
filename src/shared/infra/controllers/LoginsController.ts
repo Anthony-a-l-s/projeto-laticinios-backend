@@ -1,8 +1,16 @@
 import { Request, Response } from "express";
-const knex = require('../../infra/knex/connection');
+const knex = require('../knex/connection');
 const bcrypt = require('bcrypt')
 const crypto = require('crypto')
+const jwt = require("jsonwebtoken");
+require('dotenv').config
 
+/** 
+ * Validacao de senha
+ * 0 - Deve conter letras maiusculas, minusculas e numeros
+ * 1 - Senha valida
+ * 2 - Senha curta  
+*/
 function testPassword(password: string) {
     if (password.length >= 8) {
         const upperCase = /[A-Z]/
@@ -15,62 +23,23 @@ function testPassword(password: string) {
     return 2
 }
 
-function verifyCpf (cpf: string) {
-    cpf = (cpf.match(/\d/g) || []).join("");
-    var Soma;
-    var Resto;
-    Soma = 0;
-    if (cpf == "00000000000") return false;
-
-    for (let i = 1; i <= 9; i++)
-      Soma = Soma + parseInt(cpf.substring(i - 1, i)) * (11 - i);
-    Resto = (Soma * 10) % 11;
-
-    if (Resto == 10 || Resto == 11) Resto = 0;
-    if (Resto != parseInt(cpf.substring(9, 10))) return false;
-
-    Soma = 0;
-    for (let i = 1; i <= 10; i++)
-      Soma = Soma + parseInt(cpf.substring(i - 1, i)) * (12 - i);
-    Resto = (Soma * 10) % 11;
-
-    if (Resto == 10 || Resto == 11) Resto = 0;
-    if (Resto != parseInt(cpf.substring(10, 11))) return false;
-    return true;
-  };
-
 
 module.exports = {
 
-    //funcao para listar todos os usuarios cadastrados 
+    //funcao para retornar todos os logins cadastrado
     async index(req: Request, res: Response) {
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
         res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
-        const result = await knex('users')
+        const result = await knex('login')
 
         return res.json(result)
 
     },
 
-    async umUser(req: Request, res: Response) {
-        res.header('Access-Control-Allow-Origin', '*')
-        res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
-        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-        res.header('Access-Control-Allow-Credentials', 'true')
-        res.header('Access-Control-Max-Age', '86400')
-        const { userId } = req.params
-        console.log(userId)
-        const result = await knex('users').where({ id_user: userId })
-
-        return res.json(result)
-
-    },
-
-
-    //funcao de cadastro de usuario
+    //funcao para criar um login
     async create(req: Request, res: Response, next: any) {
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
@@ -78,45 +47,37 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { name, mail, phone_number, cpf, password, active } = req.body
-            //const { loginId } = req.params
+            const { email, password } = req.body
 
-            const aux_email = await knex('users')
-                .select("mail")
-                .where({ mail })
+            //Verificando se o email ja existe
+            const aux_email = await knex('login')
+                .select("email")
+                .where({ email })
+
 
             // se o email nao existe o processo continua
             if (aux_email.length == 0) {
-                 
-                if(verifyCpf(cpf)){
+
                 // Testando a senha para ver se respeita todos os reuisitos de uma senha
                 let aux = testPassword(password)
                 if (aux == 1) {
                     //Encriptando a senha com o bcrypt
                     const hash = await bcrypt.hash(password, 10)
                     // const hash = crypto.createHash("sha256").update(password).digest('hex')
-                    // Fazndo a insercao no banco 
 
-                    const user = await knex('users').insert({
-                        name,
-                        mail,
-                        phone_number,
-                        cpf,
-                        password: hash,
-                        active
+                    // Fazndo a insercao no banco 
+                    await knex('login').insert({
+                        email,
+                        password: hash
                     })
 
                     // Pegando o Id do login cadastrado para poder retornar
-                    const register = {
-                        name,
-                        mail,
-                        phone_number,
-                        cpf,
-                        password,
-                        active,
-                    }
-                    return res.status(201).json(register)
-                
+                    const [{ loginId }] = await knex('login')
+                        .select('loginId')
+                        .where({ email })
+
+                    //Retornando o loginId com sucesso da operacai
+                    return res.status(201).send({ loginId })
 
                 } else if (aux == 2) {
                     //Messagens de erros caso a verificacao de senha encontra um problema na senha
@@ -124,21 +85,45 @@ module.exports = {
                 } else {
                     return res.status(401).send({ message: "A senha deve conter letras maiusculas, minusculas e números" })
                 }
-            }else{
-                return res.status(401).send({ message: 'CPF is invalid ' })
-            }
             } else {
                 //Messagem de erro caso o login ja existe
                 return res.status(401).send({ message: 'Email already exists' })
             }
 
         } catch (error) {
-            console.log(error)
             next(error)
         }
     },
 
-    //funcao para atualizar os dados dum usuario cadasrtrado
+    async login(req: Request, res: Response, next: any) {
+        res.header('Access-Control-Allow-Origin', '*')
+        res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+        res.header('Access-Control-Allow-Credentials', 'true')
+        res.header('Access-Control-Max-Age', '86400')
+        try {
+            const { mail, password } = req.body
+            const user = await knex('users').where({ mail: mail })
+            if (user.length == 0) {
+                return res.status(401).json({ error: "Email ou senha incorretos" });
+            } else if (!bcrypt.compareSync(password, user[0].password)) {
+                return res.status(401).json({ error: "Email ou senha incorretos" });
+            }
+            const profile = await knex('profiles').where({ id_user: user[0].id_user })
+            return res.status(201).json(profile)
+            /*if (profile.length != 0) {
+                const jwtPayload = { admin: profile[0].ocupation }
+                const token = jwt.sign(jwtPayload, process.env.DB_SECRET)
+                 return res.status(201).json(token)
+            }*/
+           
+
+
+        } catch (error) {
+            next(error)
+        }
+
+    },
     async update(req: Request, res: Response, next: any) {
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
@@ -146,28 +131,25 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { name, mail, phone_number, cpf, password, active } = req.body
-            const { userId } = req.params
+            const { email, password } = req.body
 
-            await knex('users')
+            const hash = bcrypt.hash(password, 10, (errBcrypt: any) => {
+                if (errBcrypt) {
+                    return res.status(500).send({ error: errBcrypt })
+                }
+            })
+
+            await knex('login')
                 .update({
-                    name,
-                    mail,
-                    phone_number,
-                    cpf,
-                    password,
-                    active
+                    password: hash
                 })
-                .where({ id_user: userId })
-
-            return res.status(200).json("usuário editado feita com sucesso")
+                .where({ email })
+            return res.status(200).send()
         } catch (error) {
             next(error)
         }
     },
 
-
-    //Funcao para excluir um usuario
     async delete(req: Request, res: Response, next: any) {
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
@@ -175,13 +157,13 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { userId } = req.params
+            const { loginId } = req.params
 
-            await knex('users')
-                .where({ id_user: userId })
+            await knex('login')
+                .where({ loginId })
                 .del()
 
-            return res.status(200).json("Usuário excluído som sucesso")
+            return res.send()
         } catch (error) {
             next(error)
         }

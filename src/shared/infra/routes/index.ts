@@ -16,7 +16,7 @@ const routes = express.Router()
 //CONTROLLERS
 const UserController = require('../controllers/UsersController')
 const AddressController = require('../../../modules/controllers/AddressesController')
-const LoginController = require('../../../modules/controllers/LoginsController')
+const LoginController = require('../controllers/LoginsController')
 const TypePersonController = require('../../../modules/controllers/TypePersonsController')
 const AcessController = require('../../../modules/controllers/AcessController')
 const NaturalPersonController = require('../../../modules/controllers/NaturalPersonsController')
@@ -52,10 +52,11 @@ const uploadResponsesImages = multer(uploadConfig.upload("./tmp/responseImages")
 
 
 //LOGINS ROUTES
-routes.get("/login",ensureAuthenticate ,LoginController.index)
+/*routes.get("/login",ensureAuthenticate ,LoginController.index)
 routes.post("/login", LoginController.create) 
 routes.put("/login/:loginId", LoginController.update)
-routes.delete("/login/:loginId", LoginController.delete)
+routes.delete("/login/:loginId", LoginController.delete)*/
+routes.get("/login",LoginController.login)
 
 //USER ROUTES
 routes.get("/users",/*ensureAdmin ,*/UserController.index)
@@ -66,12 +67,14 @@ routes.delete("/user_delete/:userId", UserController.delete)
 
 //PERFILS
 routes.post('/perfile/:userId/:loginId',cors(),ProfileController.perfilCreation)
-routes.get("/profiles",/*ensureAdmin ,*/ProfileController.index)
+routes.get("/profiles",ensureAuditorFiscal, ProfileController.index)
 routes.get("/profile/:profileId", ProfileController.oneProfile)
 routes.get("/profile_users/:userId", ProfileController.profilesByUser)
 routes.post("/profile_create/:userId", ProfileController.create)
 routes.put("/profile_edit/:profileId", ProfileController.update)
 routes.delete("/perfil_delete/:profileId", ProfileController.delete)
+routes.get("/profile_autenticate/:profileId", ProfileController.getToken)
+routes.get("/teste/")
 
 //Entities ROUTES
 routes.get("/entity", ensureConsultoriaFisica, EntityController.index)
@@ -85,6 +88,7 @@ routes.get('/checklists'/*,ensureAuditorFiscal*/,checklistController.index)
 routes.get('/checklists/:checklistId' ,checklistController.UmChecklist)
 routes.post("/checklists_create/:userId", checklistController.create)
 routes.put("/checklists_edit/:checklistId", checklistController.update)
+routes.put("/checklists_respond/:checklistId", checklistController.responded)
 routes.delete("/checklists_delete/:checklistId", checklistController.delete)
 
 //TOPIC ROUTES

@@ -13,7 +13,6 @@ type MyToken = {
 
 export async function ensureAuditorFiscal(request:Request, response: Response, next: NextFunction) {
     const authHeader = request.headers.authorization;
-
     if (!authHeader) {
         throw new AppError("Token missing", 401);
         
