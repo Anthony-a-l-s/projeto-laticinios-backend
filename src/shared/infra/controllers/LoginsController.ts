@@ -111,13 +111,6 @@ module.exports = {
             }
             const profile = await knex('profiles').where({ id_user: user[0].id_user })
             return res.status(201).json(profile)
-            /*if (profile.length != 0) {
-                const jwtPayload = { admin: profile[0].ocupation }
-                const token = jwt.sign(jwtPayload, process.env.DB_SECRET)
-                 return res.status(201).json(token)
-            }*/
-           
-
 
         } catch (error) {
             next(error)
