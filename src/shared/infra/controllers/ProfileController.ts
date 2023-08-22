@@ -134,7 +134,7 @@ module.exports = {
             const { profileId }  = req.params
             const profile = await knex('profiles').where({ id_profile: profileId })
             const jwtPayload = { admin: profile[0].ocupation }
-            const token = sign({ userId: profile[0].id_profile, perfil: profile[0].ocupation }, "f968930f67be264f2c1bfb80adf27ba7", {
+            const token = sign({ userId: profile[0].id_user, perfil: profile[0].ocupation }, "f968930f67be264f2c1bfb80adf27ba7", {
                 expiresIn: "1d"
             });
             return res.status(201).json(token)

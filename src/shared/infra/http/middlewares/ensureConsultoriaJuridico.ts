@@ -21,7 +21,7 @@ export async function ensureConsultoriaJuridico(request:Request, response: Respo
 
     const [, token] = authHeader.split(" ")
 
-    try {
+    /*try {
         const {perfil: perfilUsuario}   = verify(token, "f968930f67be264f2c1bfb80adf27ba7") as MyToken
 
         console.log(perfilUsuario)
@@ -42,6 +42,21 @@ export async function ensureConsultoriaJuridico(request:Request, response: Respo
         if (!pessoaJuridicaCnpj) {
             console.log("Acces denied for not Consultoria juridico user")
             throw new AppError("Incorrect email or password");
+        }
+
+       next();
+    } catch {
+        throw new AppError("Invalid token", 401);
+    }*/
+    try {
+        const {perfil: perfilUsuario}   = verify(token, "f968930f67be264f2c1bfb80adf27ba7") as MyToken
+
+        console.log(perfilUsuario)
+        
+
+        if (perfilUsuario != "Consultoria Jurídica") {
+            console.log("Acces denied for not Responsavel Técnico user")
+          throw new AppError("Acces denied for not Auditor fiscal user", 401);
         }
 
        next();

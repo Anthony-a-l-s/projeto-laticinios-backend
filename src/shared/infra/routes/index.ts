@@ -52,10 +52,10 @@ const uploadResponsesImages = multer(uploadConfig.upload("./tmp/responseImages")
 
 
 //LOGINS ROUTES
-/*routes.get("/login",ensureAuthenticate ,LoginController.index)
+routes.get("/login",ensureAuthenticate ,LoginController.index)
 routes.post("/login", LoginController.create) 
 routes.put("/login/:loginId", LoginController.update)
-routes.delete("/login/:loginId", LoginController.delete)*/
+routes.delete("/login/:loginId", LoginController.delete)
 routes.get("/login",LoginController.login)
 
 //USER ROUTES
@@ -67,7 +67,7 @@ routes.delete("/user_delete/:userId", UserController.delete)
 
 //PERFILS
 routes.post('/perfile/:userId/:loginId',cors(),ProfileController.perfilCreation)
-routes.get("/profiles",ensureAuditorFiscal, ProfileController.index)
+routes.get("/profiles",ensureResponsavelJuridico, ProfileController.index)
 routes.get("/profile/:profileId", ProfileController.oneProfile)
 routes.get("/profile_users/:userId", ProfileController.profilesByUser)
 routes.post("/profile_create/:userId", ProfileController.create)

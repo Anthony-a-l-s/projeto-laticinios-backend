@@ -22,13 +22,13 @@ export async function ensureAdmin(request:Request, response: Response, next: Nex
     const [, token] = authHeader.split(" ")
 
     try {
-        const {userId: userId}   = verify(token, "f968930f67be264f2c1bfb80adf27ba7") as MyToken
+        const {userId: userId}  = verify(token, "f968930f67be264f2c1bfb80adf27ba7") as MyToken 
 
-        //console.log(userId)
+        console.log(userId)
         
 
-        const loginVerification = await knex.select('*').from('users').where({ userId });
-
+        const loginVerification = await knex.select('*').from('users').where({ id_user: userId });
+   
         console.log(loginVerification)
 
         if (!loginVerification) {

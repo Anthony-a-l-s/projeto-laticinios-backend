@@ -21,7 +21,7 @@ export async function ensureConsultoriaFisica(request:Request, response: Respons
 
     const [, token] = authHeader.split(" ")
 
-    try {
+    /*try {
         const {perfil: perfilUsuario}   = verify(token, "f968930f67be264f2c1bfb80adf27ba7") as MyToken
 
         console.log(perfilUsuario)
@@ -42,6 +42,21 @@ export async function ensureConsultoriaFisica(request:Request, response: Respons
         if (!pessoaFisicaCpf) {
             console.log("Acces denied for not Consultoria fisica user")
             throw new AppError("Incorrect email or password");
+        }
+
+       next();
+    } catch {
+        throw new AppError("Invalid token", 401);
+    }*/
+    try {
+        const {perfil: perfilUsuario}   = verify(token, "f968930f67be264f2c1bfb80adf27ba7") as MyToken
+
+        console.log(perfilUsuario)
+        
+
+        if (perfilUsuario != "Consultoria física") {
+            console.log("Acces denied for not Responsavel Técnico user")
+          throw new AppError("Acces denied for not Auditor fiscal user", 401);
         }
 
        next();

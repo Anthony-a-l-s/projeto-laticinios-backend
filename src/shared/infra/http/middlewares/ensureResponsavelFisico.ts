@@ -21,7 +21,7 @@ export async function ensureResponsavelFisico(request:Request, response: Respons
 
     const [, token] = authHeader.split(" ")
 
-    try {
+    /*try {
         const {perfil: perfilUsuario}   = verify(token, "f968930f67be264f2c1bfb80adf27ba7") as MyToken
 
         console.log(perfilUsuario)
@@ -47,6 +47,21 @@ export async function ensureResponsavelFisico(request:Request, response: Respons
        next();
     } catch {
         throw new AppError("Invalid token", 401);
-    }
+    }*/
+       
+    try {
+        const {perfil: perfilUsuario}   = verify(token, "f968930f67be264f2c1bfb80adf27ba7") as MyToken
 
+        console.log(perfilUsuario)
+        
+
+        if (perfilUsuario != "Responsavel Técnico Física") {
+            console.log("Acces denied for not Responsavel Técnico user")
+          throw new AppError("Acces denied for not Auditor fiscal user", 401);
+        }
+
+       next();
+    } catch {
+        throw new AppError("Invalid token", 401);
+    }
 }
