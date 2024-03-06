@@ -21,33 +21,6 @@ export async function ensureConsultoriaFisica(request:Request, response: Respons
 
     const [, token] = authHeader.split(" ")
 
-    /*try {
-        const {perfil: perfilUsuario}   = verify(token, "f968930f67be264f2c1bfb80adf27ba7") as MyToken
-
-        console.log(perfilUsuario)
-
-        const {userId: userId}   = verify(token, "f968930f67be264f2c1bfb80adf27ba7") as MyToken
-
-        console.log(userId)
-
-        let pessoaFisicaCpf = await knex.select('cpf').from('naturalPerson').where({ userId })
-        
-        console.log(pessoaFisicaCpf)
-
-        if (perfilUsuario != "Consultoria") {
-            console.log("Acces denied for not Consultoria user")
-          throw new AppError("Acces denied for not Auditor fiscal user");
-        }
-
-        if (!pessoaFisicaCpf) {
-            console.log("Acces denied for not Consultoria fisica user")
-            throw new AppError("Incorrect email or password");
-        }
-
-       next();
-    } catch {
-        throw new AppError("Invalid token", 401);
-    }*/
     try {
         const {perfil: perfilUsuario}   = verify(token, "f968930f67be264f2c1bfb80adf27ba7") as MyToken
 

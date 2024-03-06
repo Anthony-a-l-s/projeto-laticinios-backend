@@ -21,33 +21,6 @@ export async function ensureResponsavelJuridico(request:Request, response: Respo
 
     const [, token] = authHeader.split(" ")
 
-    /*try {
-        const {perfil: perfilUsuario}   = verify(token, "f968930f67be264f2c1bfb80adf27ba7") as MyToken
-
-        console.log(perfilUsuario)
-
-        const {userId: userId}   = verify(token, "f968930f67be264f2c1bfb80adf27ba7") as MyToken
-
-        console.log(userId)
-
-        let pessoaJuridicaCnpj = await knex.select('cnpj').from('Company').where({ userId })
-        
-        console.log(pessoaJuridicaCnpj)
-
-        if (perfilUsuario != "Responsavel Técnico Jurídica") {
-            console.log("Acces denied for not Responsavel Técnico user")
-          throw new AppError("Acces denied for not Auditor fiscal user");
-        }
-
-        if (!pessoaJuridicaCnpj) {
-            console.log("Acces denied for not Responsavel Técnico juridico user")
-            throw new AppError("Incorrect email or password");
-        }
-
-       next();
-    } catch {
-        throw new AppError("Invalid token", 401);
-    }*/
 
     try {
         const {perfil: perfilUsuario}   = verify(token, "f968930f67be264f2c1bfb80adf27ba7") as MyToken

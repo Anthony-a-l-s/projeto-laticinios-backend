@@ -15,7 +15,7 @@ function testPassword(password: string) {
     return 2
 }
 
-function verifyCpf (cpf: string) {
+function verifyCpf(cpf: string) {
     cpf = (cpf.match(/\d/g) || []).join("");
     var Soma;
     var Resto;
@@ -23,7 +23,7 @@ function verifyCpf (cpf: string) {
     if (cpf == "00000000000") return false;
 
     for (let i = 1; i <= 9; i++)
-      Soma = Soma + parseInt(cpf.substring(i - 1, i)) * (11 - i);
+        Soma = Soma + parseInt(cpf.substring(i - 1, i)) * (11 - i);
     Resto = (Soma * 10) % 11;
 
     if (Resto == 10 || Resto == 11) Resto = 0;
@@ -31,13 +31,13 @@ function verifyCpf (cpf: string) {
 
     Soma = 0;
     for (let i = 1; i <= 10; i++)
-      Soma = Soma + parseInt(cpf.substring(i - 1, i)) * (12 - i);
+        Soma = Soma + parseInt(cpf.substring(i - 1, i)) * (12 - i);
     Resto = (Soma * 10) % 11;
 
     if (Resto == 10 || Resto == 11) Resto = 0;
     if (Resto != parseInt(cpf.substring(10, 11))) return false;
     return true;
-  };
+};
 
 
 module.exports = {
@@ -55,18 +55,22 @@ module.exports = {
 
     },
 
-    async umUser(req: Request, res: Response) {
+    async umUser(req: Request, res: Response, next: any) {
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
         res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
-        const { userId } = req.params
-        console.log(userId)
-        const result = await knex('users').where({ id_user: userId })
+        try {
+            const { userId } = req.params
+            console.log(userId)
+            const result = await knex('users').where({ id: userId })
 
-        return res.json(result)
-
+            return res.json(result)
+        }catch(error){
+            console.log(error)
+            next(error)
+        }
     },
 
 
@@ -78,55 +82,55 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { name, mail, phone_number, cpf, password, active } = req.body
+            const { name, email, phone_number, cpf, password, active } = req.body
             //const { loginId } = req.params
 
             const aux_email = await knex('users')
-                .select("mail")
-                .where({ mail })
+                .select("email")
+                .where({ email })
 
             // se o email nao existe o processo continua
             if (aux_email.length == 0) {
-                 
-                if(verifyCpf(cpf)){
-                // Testando a senha para ver se respeita todos os reuisitos de uma senha
-                let aux = testPassword(password)
-                if (aux == 1) {
-                    //Encriptando a senha com o bcrypt
-                    const hash = await bcrypt.hash(password, 10)
-                    // const hash = crypto.createHash("sha256").update(password).digest('hex')
-                    // Fazndo a insercao no banco 
 
-                    const user = await knex('users').insert({
-                        name,
-                        mail,
-                        phone_number,
-                        cpf,
-                        password: hash,
-                        active
-                    })
+                if (verifyCpf(cpf)) {
+                    // Testando a senha para ver se respeita todos os reuisitos de uma senha
+                    let aux = testPassword(password)
+                    if (aux == 1) {
+                        //Encriptando a senha com o bcrypt
+                        const hash = await bcrypt.hash(password, 10)
+                        // const hash = crypto.createHash("sha256").update(password).digest('hex')
+                        // Fazndo a insercao no banco 
 
-                    // Pegando o Id do login cadastrado para poder retornar
-                    const register = {
-                        name,
-                        mail,
-                        phone_number,
-                        cpf,
-                        password,
-                        active,
+                        const user = await knex('users').insert({
+                            name,
+                            email,
+                            phone_number,
+                            cpf,
+                            password: hash,
+                            active
+                        })
+
+                        // Pegando o Id do login cadastrado para poder retornar
+                        const register = {
+                            name,
+                            email,
+                            phone_number,
+                            cpf,
+                            password,
+                            active,
+                        }
+                        return res.status(201).json(register)
+
+
+                    } else if (aux == 2) {
+                        //Messagens de erros caso a verificacao de senha encontra um problema na senha
+                        return res.status(401).send({ message: "A senha deve ter pelo menos 8 dígitos" })
+                    } else {
+                        return res.status(401).send({ message: "A senha deve conter letras maiusculas, minusculas e números" })
                     }
-                    return res.status(201).json(register)
-                
-
-                } else if (aux == 2) {
-                    //Messagens de erros caso a verificacao de senha encontra um problema na senha
-                    return res.status(401).send({ message: "A senha deve ter pelo menos 8 dígitos" })
                 } else {
-                    return res.status(401).send({ message: "A senha deve conter letras maiusculas, minusculas e números" })
+                    return res.status(401).send({ message: 'CPF is invalid ' })
                 }
-            }else{
-                return res.status(401).send({ message: 'CPF is invalid ' })
-            }
             } else {
                 //Messagem de erro caso o login ja existe
                 return res.status(401).send({ message: 'Email already exists' })
@@ -146,19 +150,19 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { name, mail, phone_number, cpf, password, active } = req.body
+            const { name, email, phone_number, cpf, password, active } = req.body
             const { userId } = req.params
 
             await knex('users')
                 .update({
                     name,
-                    mail,
+                    email,
                     phone_number,
                     cpf,
                     password,
                     active
                 })
-                .where({ id_user: userId })
+                .where({ id: userId })
 
             return res.status(200).json("usuário editado feita com sucesso")
         } catch (error) {
@@ -178,7 +182,7 @@ module.exports = {
             const { userId } = req.params
 
             await knex('users')
-                .where({ id_user: userId })
+                .where({ id: userId })
                 .del()
 
             return res.status(200).json("Usuário excluído som sucesso")

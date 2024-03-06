@@ -24,7 +24,7 @@ module.exports = {
         res.header('Access-Control-Max-Age', '86400')
         const { questionId } = req.params
 
-        const result = await knex('question_inamges').where({ topic_id: questionId})
+        const result = await knex('question_inamges').where({ topic_id: questionId })
 
         return res.json(result).status(200)
 
@@ -38,7 +38,7 @@ module.exports = {
         res.header('Access-Control-Max-Age', '86400')
         const { questionImageId } = req.params
 
-        const result = await knex('question_inamges').where({ id_question_inamge: questionImageId })
+        const result = await knex('question_inamges').where({ id: questionImageId })
 
         return res.json(result).status(200)
 
@@ -56,9 +56,9 @@ module.exports = {
             const { questionId } = req.params
 
             await knex('question_inamges').insert({
-               base64,
-               url,
-               id_question: questionId, 
+                base64,
+                url,
+                question_id: questionId,
             })
 
             const question = {
@@ -81,10 +81,10 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { 
+            const {
                 base64,
                 url,
-             } = req.body
+            } = req.body
             const { questionImageId } = req.params
 
             await knex('question_inamges')
@@ -92,7 +92,7 @@ module.exports = {
                     base64,
                     url,
                 })
-                .where({ id_question_inamge: questionImageId })
+                .where({ id: questionImageId })
 
             return res.status(200).json('Imagem editada com sucesso')
         } catch (error) {
@@ -111,9 +111,9 @@ module.exports = {
             const { questionImageId } = req.params
 
             await knex('question_inamges')
-                .where({id_question_inamge: questionImageId })
+                .where({ id: questionImageId })
                 .del()
-                return res.status(200).json('Imagem excluída com sucesso')
+            return res.status(200).json('Imagem excluída com sucesso')
         } catch (error) {
             next(error)
         }

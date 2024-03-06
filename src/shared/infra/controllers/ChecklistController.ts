@@ -16,7 +16,7 @@ module.exports = {
     async UmChecklist(req: Request, res: Response) {
         const { checklistId } = req.params
 
-        const result = await knex('checklists').where({ id_checklist: checklistId })
+        const result = await knex('checklists').where({ id: checklistId })
 
         return res.json(result)
 
@@ -34,7 +34,7 @@ module.exports = {
                 description,
                 status,
                 active,
-                id_user: userId,
+                user_id: userId,
             })
             const checklist = {
                 title,
@@ -62,7 +62,7 @@ module.exports = {
                     status,
                     active,
                 })
-                .where({ id_checklist: checklistId })
+                .where({ id: checklistId })
             return res.status(200).json('Checklist edidado com sucesso')
         } catch (error) {
             next(error)
@@ -77,7 +77,7 @@ module.exports = {
                 .update({
                     id_user_responded
                 })
-                .where({ id_checklist: checklistId })
+                .where({ id: checklistId })
             return res.status(200).json('Checklist respondido edidado com sucesso')
         } catch (error) {
             next(error)
@@ -91,7 +91,7 @@ module.exports = {
             const { checklistId } = req.params
 
             await knex('checklists')
-                .where({ id_checklist: checklistId })
+                .where({ id: checklistId })
                 .del()
 
             return res.status(200).json('Checklist excluído com sucesso')

@@ -76,11 +76,6 @@ routes.delete("/perfil_delete/:profileId", ProfileController.delete)
 routes.get("/profile_autenticate/:profileId", ProfileController.getToken)
 routes.get("/teste/")
 
-//Entities ROUTES
-routes.get("/entity", ensureConsultoriaFisica, EntityController.index)
-routes.post("/entity/:userId", EntityController.create)
-routes.put("/entity/:entityId", EntityController.update)
-routes.delete("/entity/:entityId", EntityController.delete)
 
 //CHECKLIST ROUTES
 routes.get('/checklists'/*,ensureAuditorFiscal*/,checklistController.index)

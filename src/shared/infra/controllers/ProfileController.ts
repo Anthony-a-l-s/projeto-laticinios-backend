@@ -86,7 +86,7 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         const { userId } = req.params
-        const result = await knex('profiles').where({ id_user: userId })
+        const result = await knex('profiles').where({ user_id: userId })
 
         return res.json(result)
 
@@ -107,7 +107,7 @@ module.exports = {
                 address,
                 register_number,
                 ocupation,
-                id_user: userId
+                user_id: userId
             })
             const profile = {
                 cnpj,
@@ -130,11 +130,10 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            console.log('Alô galera de pião 2!')
             const { profileId }  = req.params
             const profile = await knex('profiles').where({ id_profile: profileId })
             const jwtPayload = { admin: profile[0].ocupation }
-            const token = sign({ userId: profile[0].id_user, perfil: profile[0].ocupation }, "f968930f67be264f2c1bfb80adf27ba7", {
+            const token = sign({ userId: profile[0].user_id, perfil: profile[0].ocupation }, "f968930f67be264f2c1bfb80adf27ba7", {
                 expiresIn: "1d"
             });
             return res.status(201).json(token)

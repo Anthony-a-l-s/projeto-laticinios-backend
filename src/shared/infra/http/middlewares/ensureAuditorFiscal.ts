@@ -11,27 +11,27 @@ type MyToken = {
 }
 
 
-export async function ensureAuditorFiscal(request:Request, response: Response, next: NextFunction) {
+export async function ensureAuditorFiscal(request: Request, response: Response, next: NextFunction) {
     const authHeader = request.headers.authorization;
     if (!authHeader) {
         throw new AppError("Token missing", 401);
-        
+
     }
 
     const [, token] = authHeader.split(" ")
 
     try {
-        const {perfil: perfilUsuario}   = verify(token, "f968930f67be264f2c1bfb80adf27ba7") as MyToken
+        const { perfil: perfilUsuario } = verify(token, "f968930f67be264f2c1bfb80adf27ba7") as MyToken
 
         console.log(perfilUsuario)
-        
 
-        if (perfilUsuario != "auditor fiscal") {
+
+        if (perfilUsuario != "Auditor fiscal") {
             console.log("Acces denied for not Auditor fiscal user")
-          throw new AppError("Acces denied for not Auditor fiscal user", 401);
+            throw new AppError("Acces denied for not Auditor fiscal user", 401);
         }
 
-       next();
+        next();
     } catch {
         throw new AppError("Invalid token", 401);
     }

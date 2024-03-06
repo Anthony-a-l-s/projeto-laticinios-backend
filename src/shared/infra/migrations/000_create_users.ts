@@ -1,10 +1,10 @@
-import {Knex} from 'knex';
+import { Knex } from 'knex';
 
-export async function up (knex: Knex ){
-    return  knex.schema.createTable('users', table => {
-        table.increments('id_user').primary();
+export async function up(knex: Knex) {
+    return knex.schema.createTable('users', table => {
+        table.increments('id').primary();
         table.string('name').notNullable();
-        table.string('mail').notNullable().unique();
+        table.string('email').notNullable().unique();
         table.string('phone_number').notNullable();
         table.string('cpf').notNullable();
         table.string('password').notNullable();
@@ -13,6 +13,6 @@ export async function up (knex: Knex ){
     });
 }
 
-export async function down (knex: Knex){
-     return knex.schema.dropTable('users');
+export async function down(knex: Knex) {
+    return knex.schema.dropTable('users');
 }

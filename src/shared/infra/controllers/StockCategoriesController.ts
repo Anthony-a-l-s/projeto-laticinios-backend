@@ -16,7 +16,7 @@ module.exports = {
     async UmStockCategory(req: Request, res: Response) {
         const { stockCategoryId } = req.params
 
-        const result = await knex('sotck_category').where({ id_sotck_category: stockCategoryId  })
+        const result = await knex('sotck_category').where({ id: stockCategoryId  })
 
         return res.json(result)
 
@@ -27,14 +27,14 @@ module.exports = {
     async create(req: Request, res: Response, next: any) {
         try {
             const {
-                name
+                nome
             } = req.body
 
             await knex('sotck_category').insert({
-                name
+                nome
             })
             const sotck_category = {
-                name
+                nome
             }
             return res.status(201).json(sotck_category)
         } catch (error) {
@@ -47,15 +47,15 @@ module.exports = {
     async update(req: Request, res: Response, next: any) {
         try {
             const { 
-                name
+                nome
             } = req.body
             const { stockCategoryId } = req.params
             await knex('sotck_category')
                 .update({
-                    name
+                    nome
 
                 })
-                .where({ id_sotck_category: stockCategoryId })
+                .where({ id: stockCategoryId })
             return res.status(200).json('Categoria de estoque editado com sucesso')
         } catch (error) {
             next(error)
@@ -69,7 +69,7 @@ module.exports = {
             const { stockCategoryId } = req.params
 
             await knex('sotck_category')
-                .where({ id_sotck_category: stockCategoryId })
+                .where({ id: stockCategoryId })
                 .del()
 
             return res.status(200).json('Categoria de estoque excluido com sucesso')

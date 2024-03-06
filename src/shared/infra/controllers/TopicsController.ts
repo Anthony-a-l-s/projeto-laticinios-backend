@@ -24,7 +24,7 @@ module.exports = {
         res.header('Access-Control-Max-Age', '86400')
         const { checklistId } = req.params
 
-        const result = await knex('topics').where({ id_checklist: checklistId })
+        const result = await knex('topics').where({ checklist_id: checklistId })
 
         return res.json(result)
 
@@ -45,7 +45,7 @@ module.exports = {
                 description,
                 status,
                 active, 
-                id_checklist: checklistId,
+                checklist_id: checklistId,
             })
             const topic = {
                 title,
@@ -76,7 +76,7 @@ module.exports = {
                     description,
                     status,
                     active,
-                }).where({ id_topic: topicId })
+                }).where({ id: topicId })
 
             return res.status(200).json('Tópico editado com sucesso!')
         } catch (error) {
@@ -96,7 +96,7 @@ module.exports = {
             const { topicId } = req.params
 
             await knex('topics')
-                .where({ id_topic: topicId })
+                .where({ id: topicId })
                 .del()
 
             return res.status(200).json('Tópico excluído com sucesso!')

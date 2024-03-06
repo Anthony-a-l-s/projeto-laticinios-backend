@@ -38,7 +38,7 @@ module.exports = {
         res.header('Access-Control-Max-Age', '86400')
         const { questionId } = req.params
 
-        const result = await knex('questions').where({ id_question: questionId })
+        const result = await knex('questions').where({ id: questionId })
 
         return res.json(result).status(200)
 
@@ -52,7 +52,7 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { title, description, status, value, active, comment, id_pda_table } = req.body
+            const { title, description, status, value, active, comment} = req.body
             const { topicId } = req.params
 
             await knex('questions').insert({
@@ -63,7 +63,6 @@ module.exports = {
                 active,
                 comment,
                 id_topic: topicId,
-                id_pda_table,
             }).where({ topicId })
 
             const question = {
@@ -74,7 +73,6 @@ module.exports = {
                 active,
                 comment,
                 topicId,
-                id_pda_table
             }
             return res.status(201).json(question)
         } catch (error) {
@@ -91,14 +89,14 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { 
+            const {
                 title,
                 description,
                 status,
                 value,
                 active,
                 comment
-             } = req.body
+            } = req.body
             const { questionId } = req.params
 
             await knex('questions')
@@ -110,7 +108,7 @@ module.exports = {
                     active,
                     comment
                 })
-                .where({ id_question: questionId })
+                .where({ id: questionId })
 
             return res.status(200).json('Pergunta editada com sucesso')
         } catch (error) {
@@ -129,10 +127,10 @@ module.exports = {
             const { questionId } = req.params
 
             await knex('questions')
-                .where({id_question: questionId })
+                .where({ id: questionId })
                 .del()
 
-                return res.status(200).json('Pergunta excluída com sucesso')
+            return res.status(200).json('Pergunta excluída com sucesso')
         } catch (error) {
             next(error)
         }

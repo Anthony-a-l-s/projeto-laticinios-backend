@@ -16,7 +16,7 @@ module.exports = {
     async UmCalibrationControl(req: Request, res: Response) {
         const { calibrationControlId } = req.params
 
-        const result = await knex('calibration_control').where({ id_calibration_control: calibrationControlId })
+        const result = await knex('calibration_control').where({ id: calibrationControlId })
 
         return res.json(result)
 
@@ -100,7 +100,7 @@ module.exports = {
                     cnpj_calibrated_company
 
                 })
-                .where({ id_calibration_control: calibrationControlId })
+                .where({ id: calibrationControlId })
             return res.status(200).json('Controle de calibração editado com sucesso')
         } catch (error) {
             next(error)
@@ -114,7 +114,7 @@ module.exports = {
             const { calibrationControlId } = req.params
 
             await knex('calibration_control')
-                .where({ id_calibration_control: calibrationControlId })
+                .where({ id: calibrationControlId })
                 .del()
 
             return res.status(200).json('Controle de calibração excluido com sucesso')

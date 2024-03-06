@@ -22,32 +22,20 @@ export async function ensureAdmin(request:Request, response: Response, next: Nex
     const [, token] = authHeader.split(" ")
 
     try {
-        const {userId: userId}  = verify(token, "f968930f67be264f2c1bfb80adf27ba7") as MyToken 
+        const {perfil: perfilUsuario}   = verify(token, "f968930f67be264f2c1bfb80adf27ba7") as MyToken
 
-        console.log(userId)
+        console.log(perfilUsuario)
         
 
-        const loginVerification = await knex.select('*').from('users').where({ id_user: userId });
-   
-        console.log(loginVerification)
-
-        if (!loginVerification) {
-            throw new AppError("User doesn't exists", 401);
-        }
-
-        const loginId = loginVerification[0].loginId;
-
-        const email = await knex.select('email').from('login').where({loginId: loginId})
-
-        console.log(email[0].email)
-
-        if (email[0].email != "habiroumama@gmail.com") {
-          throw new AppError("Acces denied for not admin user", 401);
+        if (perfilUsuario != "Admin") {
+            console.log("Acces denied for not Auditor fiscal user")
+          throw new AppError("Acces denied for not Auditor fiscal user", 401);
         }
 
        next();
     } catch {
         throw new AppError("Invalid token", 401);
     }
+
 
 }

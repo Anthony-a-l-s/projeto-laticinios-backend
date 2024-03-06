@@ -16,7 +16,7 @@ module.exports = {
     async stockItemByCategory(req: Request, res: Response) {
         const { stockCategoryId } = req.params
          console.log(stockCategoryId)
-        const result = await knex('stock_items').where({id_sotck_category: stockCategoryId })
+        const result = await knex('stock_items').where({categoria: stockCategoryId })
 
         return res.json(result)
 
@@ -25,7 +25,7 @@ module.exports = {
     async UmStockItem(req: Request, res: Response) {
         const { stockItemId } = req.params
 
-        const result = await knex('stock_items').where({ id_stock_item: stockItemId })
+        const result = await knex('stock_items').where({ id: stockItemId })
 
         return res.json(result)
 
@@ -34,40 +34,51 @@ module.exports = {
 
     //funcao para criar um checklist
     async create(req: Request, res: Response, next: any) {
+        console.log("laaaaaaço do passarinheiro")
         try {
             const {
-                name,
-                supplier,
-                batch,
-                amount,
-                validity,
-                info,
-                formatted_date,
-                id_sotck_category
+                nome,
+                fornecedor,
+                lote,
+                quantidade,
+                validade,
+                info, 
+                dataFormatada,
+                categoria,
             } = req.body
 
+            console.log(nome + ' ' +
+                fornecedor +  ' ' +
+                lote + ' ' +
+                quantidade + ' ' +
+                validade + ' ' +
+                info + ' ' +   
+                dataFormatada + ' ' +
+                categoria + ' ' )
+
             await knex('stock_items').insert({
-                name,
-                supplier,
-                batch,
-                amount,
-                validity,
-                info,
-                formatted_date,
-                id_sotck_category
+                nome,
+                fornecedor,
+                lote,
+                quantidade,
+                validade: validade.slice(0, 10),
+                info, 
+                dataFormatada,
+                categoria,
             })
             const stock_items = {
-                name,
-                supplier,
-                batch,
-                amount,
-                validity,
-                info,
-                formatted_date,
-                id_sotck_category
+                nome,
+                fornecedor,
+                lote,
+                quantidade,
+                validade,
+                info, 
+                dataFormatada,
+                categoria,
             }
             return res.status(201).json(stock_items)
         } catch (error) {
+            console.log(error)
             next(error)
         }
     },
@@ -77,27 +88,29 @@ module.exports = {
     async update(req: Request, res: Response, next: any) {
         try {
             const { 
-                name,
-                supplier,
-                batch,
-                amount,
-                validity,
-                info,
-                formatted_date
+                nome,
+                fornecedor,
+                lote,
+                quantidade,
+                validade,
+                info, 
+                dataFormatada,
+                categoria,
             } = req.body
             const { stockItemId } = req.params
             await knex('stock_items')
                 .update({
-                    name,
-                    supplier,
-                    batch,
-                    amount,
-                    validity,
-                    info,
-                    formatted_date
+                    nome,
+                    fornecedor,
+                    lote,
+                    quantidade,
+                    validade,
+                    info, 
+                    dataFormatada,
+                    categoria,
 
                 })
-                .where({ id_stock_item: stockItemId })
+                .where({ id: stockItemId })
             return res.status(200).json('Item de estoque editado com sucesso')
         } catch (error) {
             next(error)
@@ -111,7 +124,7 @@ module.exports = {
             const { stockItemId } = req.params
 
             await knex('stock_items')
-                .where({ id_stock_item: stockItemId })
+                .where({ id: stockItemId })
                 .del()
 
             return res.status(200).json('Item de estoque excluido com sucesso')

@@ -21,33 +21,6 @@ export async function ensureResponsavelFisico(request:Request, response: Respons
 
     const [, token] = authHeader.split(" ")
 
-    /*try {
-        const {perfil: perfilUsuario}   = verify(token, "f968930f67be264f2c1bfb80adf27ba7") as MyToken
-
-        console.log(perfilUsuario)
-
-        const {userId: userId}   = verify(token, "f968930f67be264f2c1bfb80adf27ba7") as MyToken
-
-        console.log(userId)
-
-        let pessoaFisicaCpf = await knex.select('cpf').from('naturalPerson').where({ userId })
-        
-        console.log(pessoaFisicaCpf)
-
-        if (perfilUsuario != "Responsavel Técnico") {
-            console.log("Acces denied for not Responsavel Técnico user")
-          throw new AppError("Acces denied for not Auditor fiscal user", 401);
-        }
-
-        if (!pessoaFisicaCpf) {
-            console.log("Acces denied for not Responsavel Técnico fisico user")
-            throw new AppError("Incorrect email or password");
-        }
-
-       next();
-    } catch {
-        throw new AppError("Invalid token", 401);
-    }*/
        
     try {
         const {perfil: perfilUsuario}   = verify(token, "f968930f67be264f2c1bfb80adf27ba7") as MyToken

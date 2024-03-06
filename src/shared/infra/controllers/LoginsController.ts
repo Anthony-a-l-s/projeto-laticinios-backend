@@ -109,7 +109,7 @@ module.exports = {
             } else if (!bcrypt.compareSync(password, user[0].password)) {
                 return res.status(401).json({ error: "Email ou senha incorretos" });
             }
-            const profile = await knex('profiles').where({ id_user: user[0].id_user })
+            const profile = await knex('profiles').where({ id: user[0].id })
             return res.status(201).json(profile)
 
         } catch (error) {
