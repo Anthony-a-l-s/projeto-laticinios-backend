@@ -15,7 +15,7 @@ module.exports = {
     //funcao para pegar os dados de um checklist dado o id dele
     async stockItemByCategory(req: Request, res: Response) {
         const { stockCategoryId } = req.params
-         console.log(stockCategoryId)
+        console.log(stockCategoryId)
         const result = await knex('stock_items').where({categoria: stockCategoryId })
 
         return res.json(result)
@@ -37,6 +37,7 @@ module.exports = {
         console.log("laaaaaaço do passarinheiro")
         try {
             const {
+                id,
                 nome,
                 fornecedor,
                 lote,
@@ -47,16 +48,9 @@ module.exports = {
                 categoria,
             } = req.body
 
-            console.log(nome + ' ' +
-                fornecedor +  ' ' +
-                lote + ' ' +
-                quantidade + ' ' +
-                validade + ' ' +
-                info + ' ' +   
-                dataFormatada + ' ' +
-                categoria + ' ' )
 
             await knex('stock_items').insert({
+                id,
                 nome,
                 fornecedor,
                 lote,
@@ -67,6 +61,7 @@ module.exports = {
                 categoria,
             })
             const stock_items = {
+                id,
                 nome,
                 fornecedor,
                 lote,
@@ -88,6 +83,7 @@ module.exports = {
     async update(req: Request, res: Response, next: any) {
         try {
             const { 
+                id,
                 nome,
                 fornecedor,
                 lote,
@@ -100,6 +96,7 @@ module.exports = {
             const { stockItemId } = req.params
             await knex('stock_items')
                 .update({
+                    id,
                     nome,
                     fornecedor,
                     lote,

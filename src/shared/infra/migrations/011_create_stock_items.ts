@@ -2,8 +2,8 @@ import { Knex } from 'knex';
 
 export async function up(knex: Knex) {
     return knex.schema.createTable('stock_items', table => {
-        table.increments('id').primary().index();
-        table.integer('categoria').notNullable().unsigned();
+        table.string('id').primary();
+        table.string('categoria').notNullable();
         table.foreign('categoria').references('sotck_category.id');
         table.string('nome').notNullable();
         table.string('fornecedor').notNullable();

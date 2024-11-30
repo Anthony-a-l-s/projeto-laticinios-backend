@@ -27,13 +27,16 @@ module.exports = {
     async create(req: Request, res: Response, next: any) {
         try {
             const {
+                id,
                 nome
             } = req.body
 
             await knex('sotck_category').insert({
+                id,
                 nome
             })
             const sotck_category = {
+                id,
                 nome
             }
             return res.status(201).json(sotck_category)
@@ -47,13 +50,14 @@ module.exports = {
     async update(req: Request, res: Response, next: any) {
         try {
             const { 
+                id,
                 nome
             } = req.body
             const { stockCategoryId } = req.params
             await knex('sotck_category')
                 .update({
+                    id,
                     nome
-
                 })
                 .where({ id: stockCategoryId })
             return res.status(200).json('Categoria de estoque editado com sucesso')

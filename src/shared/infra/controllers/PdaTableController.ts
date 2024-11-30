@@ -24,13 +24,15 @@ module.exports = {
 
         try {
             const { pdaRefTableId } = req.params
-            const { responsible, funct } = req.body
+            const {id, responsible, funct } = req.body
             await knex('pda_tables').insert({
+                id,
                 responsible,
                 funct,
                 pda_ref_table_id: pdaRefTableId,
             })
             const pdaTable = {
+                id,
                 responsible,
                 funct,
                 pdaRefTableId
@@ -43,11 +45,12 @@ module.exports = {
 
     async update(req: Request, res: Response, next: any) {
         try {
-            const { responsible, funct } = req.body
+            const {id, responsible, funct } = req.body
             console.log(responsible + ' ' + funct)
             const { pdaTableId } = req.params
             await knex('pda_tables')
                 .update({
+                    id,
                     responsible,
                     funct,
                 })

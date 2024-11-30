@@ -52,16 +52,18 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { base64, url } = req.body
+            const { id, base64, url } = req.body
             const { questionId } = req.params
 
             await knex('question_inamges').insert({
+                id,
                 base64,
                 url,
                 question_id: questionId,
             })
 
             const question = {
+                id,
                 base64,
                 url,
                 questionId,
@@ -82,6 +84,7 @@ module.exports = {
         res.header('Access-Control-Max-Age', '86400')
         try {
             const {
+                id,
                 base64,
                 url,
             } = req.body
@@ -89,6 +92,7 @@ module.exports = {
 
             await knex('question_inamges')
                 .update({
+                    id,
                     base64,
                     url,
                 })

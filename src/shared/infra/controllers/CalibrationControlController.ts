@@ -27,6 +27,7 @@ module.exports = {
     async create(req: Request, res: Response, next: any) {
         try {
             const {
+                id,
                 instrument_name,
                 active,
                 ifnfo_isntrument,
@@ -40,6 +41,7 @@ module.exports = {
             } = req.body
 
             await knex('calibration_control').insert({
+                id,
                 instrument_name,
                 active,
                 ifnfo_isntrument,
@@ -52,6 +54,7 @@ module.exports = {
                 cnpj_calibrated_company
             })
             const calibration_control = {
+                id,
                 instrument_name,
                 active,
                 ifnfo_isntrument,
@@ -74,6 +77,7 @@ module.exports = {
     async update(req: Request, res: Response, next: any) {
         try {
             const { 
+                id,
                 instrument_name,
                 active,
                 ifnfo_isntrument,
@@ -88,6 +92,7 @@ module.exports = {
             const { calibrationControlId } = req.params
             await knex('calibration_control')
                 .update({
+                    id,
                     instrument_name,
                     active,
                     ifnfo_isntrument,

@@ -2,12 +2,12 @@ import { Knex } from 'knex';
 
 export async function up(knex: Knex) {
     return knex.schema.createTable('topics', table => {
-        table.increments('id').primary();
+        table.string('id').primary();
         table.text('title').notNullable();
-        table.text('description').notNullable();
+        table.text('description');
         table.string('status').notNullable();
         table.boolean('active').notNullable();
-        table.integer('checklist_id').notNullable().unsigned();
+        table.string('checklist_id').notNullable();
         table.foreign('checklist_id').references('checklists.id');
         table.timestamps(true, true);
     });

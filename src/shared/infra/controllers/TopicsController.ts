@@ -16,7 +16,7 @@ module.exports = {
     },
 
 
-    async lista(req: Request, res: Response) {
+    async lista_pelo_checklist(req: Request, res: Response) {
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
         res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
@@ -30,6 +30,20 @@ module.exports = {
 
     },
 
+    async lista_pelo_id(req: Request, res: Response) {
+        res.header('Access-Control-Allow-Origin', '*')
+        res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+        res.header('Access-Control-Allow-Credentials', 'true')
+        res.header('Access-Control-Max-Age', '86400')
+        const { topicId } = req.params
+
+        const result = await knex('topics').where({ checklist_id: topicId })
+
+        return res.json(result)
+
+    },
+
     async create(req: Request, res: Response, next: any) {
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
@@ -37,10 +51,11 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { title, description, status, active } = req.body
+            const { id, title, description, status, active } = req.body
             const { checklistId} = req.params
 
             await knex('topics').insert({
+                id,
                 title,
                 description,
                 status,
@@ -48,6 +63,7 @@ module.exports = {
                 checklist_id: checklistId,
             })
             const topic = {
+                id,
                 title,
                 description,
                 status,
@@ -56,6 +72,7 @@ module.exports = {
             }
             return res.status(200).json(topic)
         } catch (error) {
+            console.log(error)
             next(error)
         }
     },
@@ -67,11 +84,12 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { title, description, status, active, } = req.body
+            const {id, title, description, status, active, } = req.body
             const { topicId } = req.params
 
             await knex('topics')
                 .update({
+                    id,
                     title,
                     description,
                     status,

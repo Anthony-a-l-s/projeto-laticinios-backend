@@ -2,7 +2,7 @@ import { Knex } from 'knex';
 
 export async function up(knex: Knex) {
     return knex.schema.createTable('calibration_control', table => {
-        table.increments('id').primary();
+        table.string('id').primary();
         table.string('instrument_name').notNullable();
         table.boolean('active').notNullable();
         table.string('ifnfo_isntrument').notNullable();

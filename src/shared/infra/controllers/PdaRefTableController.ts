@@ -5,7 +5,7 @@ module.exports = {
     async index(req: Request, res: Response) {
 
 
-        const result = await knex('pda_ref_tables')
+        const result = await knex('pda_ref_table')
 
         return res.json(result)
 
@@ -14,7 +14,7 @@ module.exports = {
     async umPdaRefTable(req: Request, res: Response) {
         const { pdaRefTableId } = req.params
 
-        const result = await knex('pda_ref_tables').where({ id: pdaRefTableId })
+        const result = await knex('pda_ref_table').where({ id: pdaRefTableId })
 
         return res.json(result)
 
@@ -23,11 +23,14 @@ module.exports = {
     async create(req: Request, res: Response, next: any) {
 
         try {
-            const { pda } = req.body
-            await knex('pda_ref_tables').insert({
+            const {id, pda } = req.body
+            console.log(id, pda)
+            await knex('pda_ref_table').insert({
+                id,
                 pda
             })
             const pdaRefTable = {
+                id,
                 pda
             }
             return res.status(201).json(pdaRefTable)
@@ -38,10 +41,11 @@ module.exports = {
 
     async update(req: Request, res: Response, next: any) {
         try {
-            const { pda } = req.body
+            const { id, pda } = req.body
             const { pdaRefTableId } = req.params
-            await knex('pda_ref_tables')
+            await knex('pda_ref_table')
                 .update({
+                    id,
                     pda
                 })
                 .where({ id: pdaRefTableId })
@@ -55,7 +59,7 @@ module.exports = {
 
         try {
             const { pdaRefTableId } = req.params
-            await knex('pda_ref_tables')
+            await knex('pda_ref_table')
                 .where({ id: pdaRefTableId })
                 .del()
 

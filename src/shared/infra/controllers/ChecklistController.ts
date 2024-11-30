@@ -25,11 +25,14 @@ module.exports = {
 
     //funcao para criar um checklist
     async create(req: Request, res: Response, next: any) {
-
+            console.log('miaaaaaaauuuuuuuuu')
         try {
-            const { title, description, status, active } = req.body
+            const {id, title, description, status, active } = req.body
+            console.log(id + ' ' + title + ' ' + description + ' ' + status + ' ' + active )
             const { userId } = req.params
+            console.log(userId)
             await knex('checklists').insert({
+                id,
                 title,
                 description,
                 status,
@@ -37,6 +40,7 @@ module.exports = {
                 user_id: userId,
             })
             const checklist = {
+                id,
                 title,
                 description,
                 status,
@@ -45,6 +49,7 @@ module.exports = {
             }
             return res.status(201).json(checklist)
         } catch (error) {
+            console.log(error)
             next(error)
         }
     },
@@ -53,10 +58,11 @@ module.exports = {
     //funcao para atualizar um checklist
     async update(req: Request, res: Response, next: any) {
         try {
-            const { title,description, status, active} = req.body
+            const {id, title,description, status, active} = req.body
             const { checklistId } = req.params
             await knex('checklists')
                 .update({
+                    id,
                     title,
                     description,
                     status,

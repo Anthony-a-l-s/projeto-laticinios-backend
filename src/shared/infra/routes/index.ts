@@ -39,6 +39,7 @@ const ProductcategoryController = require('../../../modules/controllers/ProductC
 const ProductProviderController = require('../../../modules/controllers/ProductProviderController')
 const ProductsController = require('../../../modules/controllers/ProductsController')
 const InstrumentController = require('../../../modules/controllers/InstrumentController')
+const PdaQuestionTable = require('../controllers/PdaQuestionTableControlers')
 const PdaRefTableController = require('../controllers/PdaRefTableController')
 const PdaTableController = require('../controllers/PdaTableController')
 const CalibrationControlController = require('../../infra/controllers/CalibrationControlController')
@@ -89,7 +90,8 @@ routes.delete("/checklists_delete/:checklistId", checklistController.delete)
 //TOPIC ROUTES
 routes.get('/topics', TopicsController.index)
 //Pegando os topicos de um checklist
-routes.get('/topics/:checklistId', TopicsController.lista)
+routes.get('/topics-by-checklist/:checklistId', TopicsController.lista_pelo_checklist)
+routes.get('/topics/:topicId', TopicsController.lista_pelo_id)
 routes.post("/topics_create/:checklistId", TopicsController.create)
 routes.put("/topics_edit/:topicId", TopicsController.update)
 routes.delete("/topics_delete/:topicId", TopicsController.delete)
@@ -97,9 +99,15 @@ routes.delete("/topics_delete/:topicId", TopicsController.delete)
 //PDA_REF_TABLE ROUTES
 routes.get("/pda_ref_tables", PdaRefTableController.index)
 routes.get("/pda_ref_tables/:pdaRefTableId", PdaRefTableController.umPdaRefTable)
-routes.post("/pda_ref_tables", PdaRefTableController.create)
+routes.post("/pda_ref_tables_create", PdaRefTableController.create)
 routes.put("/pda_ref_tables/:pdaRefTableId", PdaRefTableController.update)
 routes.delete("/pda_ref_tables/:pdaRefTableId", PdaRefTableController.delete)
+
+//PDA_QUESTION_TABLE ROUTES
+routes.get("/pda_pda_questions", PdaQuestionTable.index)
+routes.get("/pda_questions/:pdaQuestionTableId", PdaRefTableController.umPdaRefTable)
+routes.post("/pda_questions_create", PdaQuestionTable.create)
+routes.delete("/pda_questionss/:pdaQuestionTableId", PdaRefTableController.delete)
 
 //PDA_TABLE ROUTES
 routes.get("/pda_tables", PdaTableController.index)
@@ -123,7 +131,7 @@ routes.get("/questions_images", QestionImagesController.index)
 //Pegando as imagens de uma pergunta
 routes.get("/questions_images/:questionId", QestionImagesController.imagesforQuestion)
 routes.get("/questions_images/:questionImageId", QestionImagesController.oneQestionImage)
-routes.post("/questions_images/:questionId", QestionImagesController.create)
+routes.post("/questions_images_create/:questionId", QestionImagesController.create)
 routes.put("/questions_images/:questionImageId", QuestionsController.update)
 routes.delete("/questions_images/:questionImageId", QuestionsController.delete)
 

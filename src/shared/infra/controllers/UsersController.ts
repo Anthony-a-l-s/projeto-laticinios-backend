@@ -63,11 +63,10 @@ module.exports = {
         res.header('Access-Control-Max-Age', '86400')
         try {
             const { userId } = req.params
-            console.log(userId)
             const result = await knex('users').where({ id: userId })
 
             return res.json(result)
-        }catch(error){
+        } catch (error) {
             console.log(error)
             next(error)
         }
@@ -82,15 +81,14 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { name, email, phone_number, cpf, password, active } = req.body
+            const { id, name, email, phone_number, cpf, password, active } = req.body
             //const { loginId } = req.params
-
             const aux_email = await knex('users')
                 .select("email")
                 .where({ email })
 
             // se o email nao existe o processo continua
-            if (aux_email.length == 0) {
+            if (aux_email.length === 0) {
 
                 if (verifyCpf(cpf)) {
                     // Testando a senha para ver se respeita todos os reuisitos de uma senha
@@ -100,8 +98,8 @@ module.exports = {
                         const hash = await bcrypt.hash(password, 10)
                         // const hash = crypto.createHash("sha256").update(password).digest('hex')
                         // Fazndo a insercao no banco 
-
                         const user = await knex('users').insert({
+                            id,
                             name,
                             email,
                             phone_number,
@@ -109,6 +107,7 @@ module.exports = {
                             password: hash,
                             active
                         })
+
 
                         // Pegando o Id do login cadastrado para poder retornar
                         const register = {
@@ -126,13 +125,16 @@ module.exports = {
                         //Messagens de erros caso a verificacao de senha encontra um problema na senha
                         return res.status(401).send({ message: "A senha deve ter pelo menos 8 dígitos" })
                     } else {
+                        console.log("A senha deve conter letras maiusculas, minusculas e números")
                         return res.status(401).send({ message: "A senha deve conter letras maiusculas, minusculas e números" })
                     }
                 } else {
+                    console.log('CPF is invalid ')
                     return res.status(401).send({ message: 'CPF is invalid ' })
                 }
             } else {
                 //Messagem de erro caso o login ja existe
+                console.log('Email already exists' )
                 return res.status(401).send({ message: 'Email already exists' })
             }
 
