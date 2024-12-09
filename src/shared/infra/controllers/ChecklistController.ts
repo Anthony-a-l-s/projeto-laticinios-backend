@@ -22,6 +22,15 @@ module.exports = {
 
     },
 
+    async UmChecklistAllInformations(req: Request, res: Response) {
+        const { checklistId } = req.params
+        const {id, title, description, status, active } = req.body
+        const result = await knex('checklists').where({ id: checklistId, title: title, description: description, status: status, active: active})
+
+        return res.json(result)
+
+    },
+
 
     //funcao para criar um checklist
     async create(req: Request, res: Response, next: any) {

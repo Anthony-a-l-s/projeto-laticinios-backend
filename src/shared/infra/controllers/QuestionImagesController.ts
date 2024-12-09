@@ -70,6 +70,7 @@ module.exports = {
             }
             return res.status(201).json(question)
         } catch (error) {
+            console.log(error)
             next(error)
         }
     },

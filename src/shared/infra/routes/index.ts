@@ -82,6 +82,7 @@ routes.get("/teste/")
 routes.get('/checklists'/*,ensureAuditorFiscal*/,checklistController.index)
 //Pegando os dados de um checklist especifico pelo id
 routes.get('/checklists/:checklistId' ,checklistController.UmChecklist)
+routes.get('/checklistsAllInformations/:checklistId' ,checklistController.UmChecklistAllInformations)
 routes.post("/checklists_create/:userId", checklistController.create)
 routes.put("/checklists_edit/:checklistId", checklistController.update)
 routes.put("/checklists_respond/:checklistId", checklistController.responded)

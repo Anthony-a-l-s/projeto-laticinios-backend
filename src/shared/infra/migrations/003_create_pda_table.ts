@@ -6,7 +6,7 @@ export async function up(knex: Knex) {
         table.string('pda_ref_table_id').notNullable();
         table.foreign('pda_ref_table_id').references('pda_ref_table.id');
         table.string('responsible').notNullable();
-        table.string('funct').notNullable();
+        table.string('deadline').notNullable();
         table.timestamps(true, true);
     });
 }

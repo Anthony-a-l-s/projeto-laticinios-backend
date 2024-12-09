@@ -5,7 +5,7 @@ module.exports = {
     async index(req: Request, res: Response) {
 
 
-        const result = await knex('pda_tables')
+        const result = await knex('pda_table')
 
         return res.json(result)
 
@@ -14,7 +14,7 @@ module.exports = {
     async UmPdaTable(req: Request, res: Response) {
         const { pdaTableId } = req.params
 
-        const result = await knex('pda_tables').where({ id: pdaTableId })
+        const result = await knex('pda_table').where({ id: pdaTableId })
 
         return res.json(result)
 
@@ -24,35 +24,36 @@ module.exports = {
 
         try {
             const { pdaRefTableId } = req.params
-            const {id, responsible, funct } = req.body
-            await knex('pda_tables').insert({
+            const {id, responsible, deadline } = req.body
+            await knex('pda_table').insert({
                 id,
                 responsible,
-                funct,
+                deadline,
                 pda_ref_table_id: pdaRefTableId,
             })
             const pdaTable = {
                 id,
                 responsible,
-                funct,
+                deadline,
                 pdaRefTableId
             }
             return res.status(201).json(pdaTable)
         } catch (error) {
+            console.log(error)
             next(error)
         }
     },
 
     async update(req: Request, res: Response, next: any) {
         try {
-            const {id, responsible, funct } = req.body
-            console.log(responsible + ' ' + funct)
+            const {id, responsible, deadline } = req.body
+            console.log(responsible + ' ' + deadline)
             const { pdaTableId } = req.params
             await knex('pda_tables')
                 .update({
                     id,
                     responsible,
-                    funct,
+                    deadline,
                 })
                 .where({ id: pdaTableId })
             return res.status(200).json("PDA ceditado com sucesso")
