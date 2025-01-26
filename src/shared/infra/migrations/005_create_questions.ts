@@ -4,7 +4,6 @@ export async function up(knex: Knex) {
     return knex.schema.createTable('questions', table => {
         table.string('id').primary();
         table.text('title').notNullable();
-        table.text('description');
         table.string('status').notNullable();
         table.integer('value').notNullable();
         table.boolean('active').notNullable();

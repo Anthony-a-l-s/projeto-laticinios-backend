@@ -7,6 +7,8 @@ export async function up(knex: Knex) {
         table.text('description');
         table.string('status').notNullable();
         table.boolean('active').notNullable();
+        table.integer('favorite');
+        table.integer('accessMask');
         table.string('user_id').notNullable();
         table.foreign('user_id').references('users.id');
         table.string('id_user_responded');

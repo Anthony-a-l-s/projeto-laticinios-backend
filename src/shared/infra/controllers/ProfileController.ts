@@ -4,6 +4,7 @@ import { AppError } from "../../errors/AppErrors";
 const knex = require('../knex/connection')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const { v4: uuidv4 } = require('uuid');
 require('dotenv').config
 
 //Tipo de retorno da funcao abaixo
@@ -92,6 +93,7 @@ module.exports = {
 
     },
 
+
     //funcao de cadastro de usuario
     async create(req: Request, res: Response, next: any) {
         res.header('Access-Control-Allow-Origin', '*')
@@ -100,20 +102,25 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { cnpj, address, register_number, ocupation } = req.body
+            const {type, cnpj, address, register_number, active } = req.body
             const { userId } = req.params
+            const id = uuidv4();
             await knex('profiles').insert({
+                id: id,
+                type,
                 cnpj,
                 address,
                 register_number,
-                ocupation,
+                active,
                 user_id: userId
             })
             const profile = {
+                id,
+                type,
                 cnpj,
                 address,
                 register_number,
-                ocupation,
+                active,
                 userId
             }
             return res.status(201).json(profile)
@@ -131,9 +138,9 @@ module.exports = {
         res.header('Access-Control-Max-Age', '86400')
         try {
             const { profileId }  = req.params
-            const profile = await knex('profiles').where({ id_profile: profileId })
-            const jwtPayload = { admin: profile[0].ocupation }
-            const token = sign({ userId: profile[0].user_id, perfil: profile[0].ocupation }, "f968930f67be264f2c1bfb80adf27ba7", {
+            const profile = await knex('profiles').where({ id: profileId })
+            //const jwtPayload = { admin: profile[0].type}
+            const token = sign({ userId: profile[0].user_id, perfil: profile[0].type }, "f968930f67be264f2c1bfb80adf27ba7", {
                 expiresIn: "1d"
             });
             return res.status(201).json(token)
@@ -150,14 +157,13 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { cnpj, address, register_number, ocupation } = req.body
+            const { cnpj, address, register_number } = req.body
             const { profileId } = req.params
             await knex('profiles')
                 .update({
                     cnpj,
                     address,
-                    register_number,
-                    ocupation
+                    register_number
                 })
                 .where({ id_profile: profileId })
 
@@ -178,7 +184,7 @@ module.exports = {
         try {
             const { profileId } = req.params
             await knex('profiles')
-                .where({ id_profile: profileId })
+                .where({ id: profileId })
                 .del()
 
             return res.status(200).json('Perfil excluído com sucesso')

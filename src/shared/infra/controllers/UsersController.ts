@@ -111,6 +111,7 @@ module.exports = {
 
                         // Pegando o Id do login cadastrado para poder retornar
                         const register = {
+                            id,
                             name,
                             email,
                             phone_number,

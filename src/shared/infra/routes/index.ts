@@ -68,7 +68,7 @@ routes.delete("/user_delete/:userId", UserController.delete)
 
 //PERFILS
 routes.post('/perfile/:userId/:loginId',cors(),ProfileController.perfilCreation)
-routes.get("/profiles",ensureResponsavelJuridico, ProfileController.index)
+routes.get("/profiles",/*ensureResponsavelJuridico,*/ ProfileController.index)
 routes.get("/profile/:profileId", ProfileController.oneProfile)
 routes.get("/profile_users/:userId", ProfileController.profilesByUser)
 routes.post("/profile_create/:userId", ProfileController.create)
@@ -83,6 +83,7 @@ routes.get('/checklists'/*,ensureAuditorFiscal*/,checklistController.index)
 //Pegando os dados de um checklist especifico pelo id
 routes.get('/checklists/:checklistId' ,checklistController.UmChecklist)
 routes.get('/checklistsAllInformations/:checklistId' ,checklistController.UmChecklistAllInformations)
+routes.get('/checklists_all_data/:userId' ,checklistController.SelectAllData)
 routes.post("/checklists_create/:userId", checklistController.create)
 routes.put("/checklists_edit/:checklistId", checklistController.update)
 routes.put("/checklists_respond/:checklistId", checklistController.responded)

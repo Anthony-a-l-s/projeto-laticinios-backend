@@ -5,6 +5,7 @@ const routes = require("../routes")
 import cors from 'cors';
 import bodyParser from "body-parser";
 import { AppError } from "../../errors/AppErrors";
+const createAdmin = require('../../infra/seed/admin')
 
 
 const app = express();

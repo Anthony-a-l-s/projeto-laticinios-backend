@@ -23,8 +23,9 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         const { topicId } = req.params
+        console.log(topicId)
 
-        const result = await knex('questions').where({ id_topic: topicId })
+        const result = await knex('questions').where({ topic_id: topicId })
 
         return res.json(result).status(200)
 
@@ -52,13 +53,12 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const {id, title, description, status, value, active, comment} = req.body
+            const {id, title, status, value, active, comment} = req.body
             const { topicId } = req.params
 
             await knex('questions').insert({
                 id,
                 title,
-                description,
                 status,
                 value,
                 active,
@@ -69,7 +69,6 @@ module.exports = {
             const question = {
                 id,
                 title,
-                description,
                 status,
                 value,
                 active,
@@ -95,7 +94,6 @@ module.exports = {
             const {
                 id,
                 title,
-                description,
                 status,
                 value,
                 active,
@@ -106,8 +104,6 @@ module.exports = {
             await knex('questions')
                 .update({
                     id,
-                    title,
-                    description,
                     status,
                     value,
                     active,

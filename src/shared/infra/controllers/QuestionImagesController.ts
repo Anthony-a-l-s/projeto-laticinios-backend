@@ -9,7 +9,7 @@ module.exports = {
         res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
-        const result = await knex('question_inamges')
+        const result = await knex('question_images')
 
         return res.json(result)
 
@@ -24,7 +24,7 @@ module.exports = {
         res.header('Access-Control-Max-Age', '86400')
         const { questionId } = req.params
 
-        const result = await knex('question_inamges').where({ topic_id: questionId })
+        const result = await knex('question_images').where({ topic_id: questionId })
 
         return res.json(result).status(200)
 
@@ -38,7 +38,7 @@ module.exports = {
         res.header('Access-Control-Max-Age', '86400')
         const { questionImageId } = req.params
 
-        const result = await knex('question_inamges').where({ id: questionImageId })
+        const result = await knex('question_images').where({ id: questionImageId })
 
         return res.json(result).status(200)
 
@@ -55,7 +55,7 @@ module.exports = {
             const { id, base64, url } = req.body
             const { questionId } = req.params
 
-            await knex('question_inamges').insert({
+            await knex('question_images').insert({
                 id,
                 base64,
                 url,
@@ -91,7 +91,7 @@ module.exports = {
             } = req.body
             const { questionImageId } = req.params
 
-            await knex('question_inamges')
+            await knex('question_images')
                 .update({
                     id,
                     base64,
@@ -115,7 +115,7 @@ module.exports = {
         try {
             const { questionImageId } = req.params
 
-            await knex('question_inamges')
+            await knex('question_images')
                 .where({ id: questionImageId })
                 .del()
             return res.status(200).json('Imagem excluída com sucesso')
