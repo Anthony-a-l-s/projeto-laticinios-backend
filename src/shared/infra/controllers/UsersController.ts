@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 const knex = require('../../infra/knex/connection');
 const bcrypt = require('bcrypt')
 const crypto = require('crypto')
+const { v4: uuidv4 } = require('uuid');
 
 function testPassword(password: string) {
     if (password.length >= 8) {
@@ -81,7 +82,7 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { id, name, email, phone_number, cpf, password, active } = req.body
+            const { id, name, email, phone, cpf, password, active } = req.body
             //const { loginId } = req.params
             const aux_email = await knex('users')
                 .select("email")
@@ -98,23 +99,23 @@ module.exports = {
                         const hash = await bcrypt.hash(password, 10)
                         // const hash = crypto.createHash("sha256").update(password).digest('hex')
                         // Fazndo a insercao no banco 
+                        const userId = uuidv4();
                         const user = await knex('users').insert({
-                            id,
+                            id: id || userId,
                             name,
                             email,
-                            phone_number,
+                            phone,
                             cpf,
                             password: hash,
                             active
                         })
 
-
                         // Pegando o Id do login cadastrado para poder retornar
                         const register = {
-                            id,
+                            id: userId,
                             name,
                             email,
-                            phone_number,
+                            phone,
                             cpf,
                             password,
                             active,
@@ -135,7 +136,7 @@ module.exports = {
                 }
             } else {
                 //Messagem de erro caso o login ja existe
-                console.log('Email already exists' )
+                console.log('Email already exists')
                 return res.status(401).send({ message: 'Email already exists' })
             }
 
@@ -145,6 +146,58 @@ module.exports = {
         }
     },
 
+    async getAdmin(req: Request, res: Response, next: any) {
+        res.header('Access-Control-Allow-Origin', '*')
+        res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+        res.header('Access-Control-Allow-Credentials', 'true')
+        res.header('Access-Control-Max-Age', '86400')
+        try {
+            knex('users').where({ name: 'admin' })
+                .then((user: any) => {
+                    knex('profiles').where({ user_id: user[0].id })
+                        .then((profile: any) => {
+                            const admin = {
+                                user: {
+                                    id: user[0].id,
+                                    name: user[0].name,
+                                    email: user[0].email,
+                                    phone: user[0].phone,
+                                    cpf: user[0].cpf,
+                                    password: user[0].password,
+                                    active: user[0].active,
+                                    created_at: user[0].created_at,
+                                    updated_at: user[0].updated_at,
+                                },
+                                profile: {
+                                    id: profile[0].id,
+                                    type: profile[0].type,
+                                    cnpj: profile[0].cnpj,
+                                    address: profile[0].address,
+                                    register_number: profile[0].register_number,
+                                    active: profile[0].active,
+                                    created_at: profile[0].created_at,
+                                    updated_at: profile[0].updated_at,
+                                    user_id: profile[0].user_id
+                                }
+                            }
+                            return res.json(admin)
+                        })
+                        .catch((error: any) => {
+                            console.log('get profile error: ' + error)
+                        })
+                })
+                .catch((error: any) => {
+                    console.log('get user error: ' + error)
+                })
+
+        } catch (error) {
+            console.log(error)
+            next(error)
+        }
+    },
+
+
     //funcao para atualizar os dados dum usuario cadasrtrado
     async update(req: Request, res: Response, next: any) {
         res.header('Access-Control-Allow-Origin', '*')
@@ -153,14 +206,14 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { name, email, phone_number, cpf, password, active } = req.body
+            const { name, email, phone, cpf, password, active } = req.body
             const { userId } = req.params
 
             await knex('users')
                 .update({
                     name,
                     email,
-                    phone_number,
+                    phone,
                     cpf,
                     password,
                     active

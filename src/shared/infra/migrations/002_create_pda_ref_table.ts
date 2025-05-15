@@ -4,6 +4,7 @@ export async function up(knex: Knex) {
     return knex.schema.createTable('pda_ref_table', table => {
         table.string('id').primary();
         table.text('pda').notNullable();
+        table.timestamps(true, true);
     });
 }
 

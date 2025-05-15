@@ -12,18 +12,17 @@ module.exports = {
     },
 
     async umPDAQuestionTable(req: Request, res: Response) {
-        const { pdaRefTableId } = req.params
+        const { pdaQuestionTableId } = req.params
 
-        const result = await knex('PDA_questionTable').where({ id: pdaRefTableId })
+        const result = await knex('PDA_questionTable').where({ id: pdaQuestionTableId })
 
         return res.json(result)
 
     },
 
     async create(req: Request, res: Response, next: any) {
-
         try {
-            const {id, pda_id, question_id } = req.body
+            const { id, pda_id, question_id } = req.body
             console.log(id, pda_id, question_id)
             await knex('PDA_questionTable').insert({
                 id,
@@ -45,9 +44,9 @@ module.exports = {
     async delete(req: Request, res: Response, next: any) {
 
         try {
-            const { pdaRefTableId } = req.params
+            const { pdaQuestionTableId } = req.params
             await knex('PDA_questionTable')
-                .where({ id: pdaRefTableId })
+                .where({ id: pdaQuestionTableId })
                 .del()
 
             return res.status(200).json("ref PDA_questionTable excluído com sucesso!")

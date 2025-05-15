@@ -25,7 +25,7 @@ const NotificationController = require('../../../modules/controllers/Notificatio
 const Responsibles_Technician_Quality_Control = require('../../../modules/controllers/Responsibles_Technician_Quality_ControlController')
 const Responsibles_Technician_Quality_Control_Crmv = require('../../../modules/controllers/Responsibles_Technician_Quality_Control_CrmvController')
 const ConsultancyController = require('../../../modules/controllers/ConsultancysController')
-const TaxAuditorController = require('../../../modules/controllers/TaxAuditorsController') 
+const TaxAuditorController = require('../../../modules/controllers/TaxAuditorsController')
 const AuthenticationController = require('../../../modules/controllers/AuthenticationController')
 const checklistController = require('../controllers/ChecklistController')
 const QuestionsController = require('../controllers/QuestionsController')
@@ -52,22 +52,24 @@ var cors = require('cors')
 const uploadResponsesImages = multer(uploadConfig.upload("./tmp/responseImages"));
 
 
+
 //LOGINS ROUTES
-routes.get("/login",ensureAuthenticate ,LoginController.index)
-routes.post("/login", LoginController.create) 
+routes.get("/login", ensureAuthenticate, LoginController.index)
+routes.post("/login", LoginController.create)
 routes.put("/login/:loginId", LoginController.update)
 routes.delete("/login/:loginId", LoginController.delete)
-routes.get("/login",LoginController.login)
+routes.get("/login", LoginController.login)
 
 //USER ROUTES
 routes.get("/users",/*ensureAdmin ,*/UserController.index)
-routes.get("/user/:userId",UserController.umUser)
+routes.get("/user_admin",/*ensureAdmin ,*/UserController.getAdmin)
+routes.get("/user/:userId", UserController.umUser)
 routes.post("/users_create", UserController.create)
 routes.put("/user_edit/:userId", UserController.update)
 routes.delete("/user_delete/:userId", UserController.delete)
 
 //PERFILS
-routes.post('/perfile/:userId/:loginId',cors(),ProfileController.perfilCreation)
+routes.post('/perfile/:userId/:loginId', cors(), ProfileController.perfilCreation)
 routes.get("/profiles",/*ensureResponsavelJuridico,*/ ProfileController.index)
 routes.get("/profile/:profileId", ProfileController.oneProfile)
 routes.get("/profile_users/:userId", ProfileController.profilesByUser)
@@ -79,15 +81,18 @@ routes.get("/teste/")
 
 
 //CHECKLIST ROUTES
-routes.get('/checklists'/*,ensureAuditorFiscal*/,checklistController.index)
+routes.get('/checklists'/*,ensureAuditorFiscal*/, checklistController.index)
 //Pegando os dados de um checklist especifico pelo id
-routes.get('/checklists/:checklistId' ,checklistController.UmChecklist)
-routes.get('/checklistsAllInformations/:checklistId' ,checklistController.UmChecklistAllInformations)
-routes.get('/checklists_all_data/:userId' ,checklistController.SelectAllData)
+routes.get('/checklists/:checklistId', checklistController.UmChecklist)
+routes.get('/checklistsOfUser/:userId', checklistController.ChecklistOfUser)
+routes.get('/checklistsAllInformations/:checklistId', checklistController.UmChecklistAllInformations)
+routes.get('/checklists_all_data/:userId', checklistController.SelectAllData)
+routes.get('/checklists_and_childrens/:checklistId', checklistController.OneChecklistAndCildrens)
 routes.post("/checklists_create/:userId", checklistController.create)
 routes.put("/checklists_edit/:checklistId", checklistController.update)
 routes.put("/checklists_respond/:checklistId", checklistController.responded)
-routes.delete("/checklists_delete/:checklistId", checklistController.delete)
+//routes.delete("/checklists_delete/:checklistId", checklistController.delete)
+routes.delete("/checklists_deleteAndChildrens/:checklistId", checklistController.deleteAndChildrens)
 
 //TOPIC ROUTES
 routes.get('/topics', TopicsController.index)
@@ -96,7 +101,18 @@ routes.get('/topics-by-checklist/:checklistId', TopicsController.lista_pelo_chec
 routes.get('/topics/:topicId', TopicsController.lista_pelo_id)
 routes.post("/topics_create/:checklistId", TopicsController.create)
 routes.put("/topics_edit/:topicId", TopicsController.update)
-routes.delete("/topics_delete/:topicId", TopicsController.delete)
+//routes.delete("/topics_delete/:topicId", TopicsController.delete)
+routes.delete("/topics_deleteAndChildrens/:topicId", TopicsController.deleteAndChildrens)
+
+//QUESTIONS ROUTES
+routes.get("/allQuestions", QuestionsController.index)
+//Pegando as perguntas de um topico
+routes.get("/questions/:topicId", QuestionsController.questionsOfAnTopic)
+routes.get("/question/:questionId", QuestionsController.oneQuestion)
+routes.post("/questions_create/:topicId", QuestionsController.create)
+routes.put("/questions_edit/:questionId", QuestionsController.update)
+routes.delete("/question_delete/:questionId", QuestionsController.delete)
+//routes.delete("/question_deleteAndChildrens/:questionId", QuestionsController.deleteAndChildrens)
 
 //PDA_REF_TABLE ROUTES
 routes.get("/pda_ref_tables", PdaRefTableController.index)
@@ -107,26 +123,18 @@ routes.delete("/pda_ref_tables/:pdaRefTableId", PdaRefTableController.delete)
 
 //PDA_QUESTION_TABLE ROUTES
 routes.get("/pda_pda_questions", PdaQuestionTable.index)
-routes.get("/pda_questions/:pdaQuestionTableId", PdaRefTableController.umPdaRefTable)
+routes.get("/pda_questions/:pdaQuestionTableId", PdaQuestionTable.umPDAQuestionTable)
 routes.post("/pda_questions_create", PdaQuestionTable.create)
-routes.delete("/pda_questionss/:pdaQuestionTableId", PdaRefTableController.delete)
+routes.delete("/pda_questions/:pdaQuestionTableId", PdaQuestionTable.delete)
 
 //PDA_TABLE ROUTES
 routes.get("/pda_tables", PdaTableController.index)
 routes.get("/pda_tables/:pdaTableId", PdaTableController.UmPdaTable)
-routes.post("/pda_tables_create/:pdaRefTableId", PdaTableController.create)
+routes.post("/pda_tables_create", PdaTableController.create)
 routes.put("/pda_tables_edit/:pdaTableId", PdaTableController.update)
 routes.delete("/pda_tables_delete/:pdaTableId", PdaTableController.delete)
 
 
-//QUESTIONS ROUTES
-routes.get("/allQuestions", QuestionsController.index)
-//Pegando as perguntas de um topico
-routes.get("/questions/:topicId", QuestionsController.questionsOfAnTopic)
-routes.get("/question/:questionId", QuestionsController.oneQuestion)
-routes.post("/questions_create/:topicId", QuestionsController.create)
-routes.put("/questions_edit/:questionId", QuestionsController.update)
-routes.delete("/question_delete/:questionId", QuestionsController.delete)
 
 //QUESTIONS IMAGES ROUTES
 routes.get("/questions_images", QestionImagesController.index)
@@ -176,83 +184,83 @@ routes.post("/responsesImages/:responseId", uploadResponsesImages.array("images"
 
 //ADDRESSES ROUTES
 routes.get("/address", AddressController.index)
-routes.post("/address/:userId", AddressController.create) 
+routes.post("/address/:userId", AddressController.create)
 routes.put("/address/:addressId", AddressController.update)
 routes.delete("/address/:addressId", AddressController.delete)
 
 
 //TYPE PERSON ROUTES
 routes.get("/typePerson", TypePersonController.index)
-routes.post("/typePerson/:userId", TypePersonController.create) 
+routes.post("/typePerson/:userId", TypePersonController.create)
 routes.put("/typePerson/:typePersonId", TypePersonController.update)
 routes.delete("/typePerson/:typePersonId", TypePersonController.delete)
 
 // ACESS ROUTES
 routes.get("/acess", AcessController.index)
-routes.post("/acess/:loginId", AcessController.create) 
+routes.post("/acess/:loginId", AcessController.create)
 routes.put("/acess/:loginId", AcessController.update)
 routes.delete("/acess/:acessId", AcessController.delete)
 
 //NATURAL PERSONS ROUTES
 routes.get("/naturalPerson", NaturalPersonController.index)
-routes.post("/naturalPerson/:userId", NaturalPersonController.create) 
+routes.post("/naturalPerson/:userId", NaturalPersonController.create)
 routes.put("/naturalPerson/:naturalPersonId", NaturalPersonController.update)
 routes.delete("/naturalPerson/:naturalPersonId", NaturalPersonController.delete)
 
 //LEGAL PERSONS ROUTES
 routes.get("/legalPerson", LegalPersonController.index)
-routes.post("/legalPerson/:userId", LegalPersonController.create) 
+routes.post("/legalPerson/:userId", LegalPersonController.create)
 routes.put("/legalPerson/:legalPersonId", LegalPersonController.update)
 routes.delete("/legalPerson/:legalPersonId", LegalPersonController.delete)
 
 // NOTIFICATION ROUTES
 routes.get("/notification", NotificationController.index)
-routes.post("/notification/:userId", NotificationController.create) 
+routes.post("/notification/:userId", NotificationController.create)
 routes.put("/notification/:notificationId", NotificationController.update)
 routes.delete("/notification/:notificationId", NotificationController.delete)
 
 // Responsibles_Technician_Quality_Control ROUTES
 routes.get("/rtqc", Responsibles_Technician_Quality_Control.index)
-routes.post("/rtqc/:userId", Responsibles_Technician_Quality_Control.create) 
+routes.post("/rtqc/:userId", Responsibles_Technician_Quality_Control.create)
 routes.put("/rtqc/:responsibleId", Responsibles_Technician_Quality_Control.update)
 routes.delete("/rtqc/:responsibleId", Responsibles_Technician_Quality_Control.delete)
 
 //Responsibles_Technician_Quality_Contro_Crmv ROUTES
 routes.get("/rtqccrmv", Responsibles_Technician_Quality_Control_Crmv.index)
-routes.post("/rtqccrmv/:userId", Responsibles_Technician_Quality_Control_Crmv.create) 
+routes.post("/rtqccrmv/:userId", Responsibles_Technician_Quality_Control_Crmv.create)
 routes.put("/rtqccrmv/:responsibleId", Responsibles_Technician_Quality_Control_Crmv.update)
 routes.delete("/rtqccrmv/:responsibleId", Responsibles_Technician_Quality_Control_Crmv.delete)
 
 // Consultancys ROUTES 
 routes.get("/consultancys", ConsultancyController.index)
-routes.post("/consultancys/:userId", ConsultancyController.create) 
+routes.post("/consultancys/:userId", ConsultancyController.create)
 routes.put("/consultancys/:consultancyId", ConsultancyController.update)
 routes.delete("/consultancys/:consultancyId", ConsultancyController.delete)
 
 //TaxAuditors ROUTES
 routes.get("/taxauditors", TaxAuditorController.index)
-routes.post("/taxAuditor/:userId", TaxAuditorController.create) 
+routes.post("/taxAuditor/:userId", TaxAuditorController.create)
 routes.put("/taxAuditor/:taxAuditorId", TaxAuditorController.update)
 routes.delete("/taxAuditor/:taxAuditorId", TaxAuditorController.delete)
 
 //ROTAS DE LOGIN
-routes.post('/authentication',cors(),AuthenticationController.authentication)
+routes.post('/authentication', cors(), AuthenticationController.authentication)
 
 //ROTAS DE COMPANY
 routes.get("/company", CompanyController.index)
-routes.post("/company/:userId", CompanyController.create) 
+routes.post("/company/:userId", CompanyController.create)
 routes.put("/company/:legalPersonId", CompanyController.update)
 routes.delete("/company/:legalPersonId", CompanyController.delete)
 
 //ROTAS DE product Category
 routes.get("/productCategory", ProductcategoryController.index)
-routes.post("/productCategory", ProductcategoryController.create) 
+routes.post("/productCategory", ProductcategoryController.create)
 routes.put("/productCategory/:productcategoryId", ProductcategoryController.update)
 routes.delete("/productCategory/:productcategoryId", ProductcategoryController.delete)
 
 //ROTAS DE product Provider
 routes.get("/productProvider", ProductProviderController.index)
-routes.post("/productProvider", ProductProviderController.create) 
+routes.post("/productProvider", ProductProviderController.create)
 routes.put("/productProvider/:productProviderId", ProductProviderController.update)
 routes.delete("/productProvider/:productProviderId", ProductProviderController.delete)
 
@@ -264,7 +272,7 @@ routes.delete("/products/:productId", ProductsController.delete)
 
 //ROTAS DE instrumentos
 routes.get("/instrument", InstrumentController.index)
-routes.post("/instrument", InstrumentController.create) 
+routes.post("/instrument", InstrumentController.create)
 routes.put("/instrument/:instrumentId", InstrumentController.update)
 routes.delete("/instrument/:instrumentId", InstrumentController.delete)
 

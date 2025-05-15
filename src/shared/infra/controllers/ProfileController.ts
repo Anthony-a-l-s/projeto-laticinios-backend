@@ -102,8 +102,10 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const {type, cnpj, address, register_number, active } = req.body
+            const {type, cnpj, address, register_number, function_id, active } = req.body
             const { userId } = req.params
+            console.log('Esse é o id ó: ')
+            console.log(userId)
             const id = uuidv4();
             await knex('profiles').insert({
                 id: id,
@@ -111,6 +113,7 @@ module.exports = {
                 cnpj,
                 address,
                 register_number,
+                function_id,
                 active,
                 user_id: userId
             })
@@ -120,6 +123,7 @@ module.exports = {
                 cnpj,
                 address,
                 register_number,
+                function_id,
                 active,
                 userId
             }
@@ -157,13 +161,14 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { cnpj, address, register_number } = req.body
+            const { cnpj, address, register_number, function_id } = req.body
             const { profileId } = req.params
             await knex('profiles')
                 .update({
                     cnpj,
                     address,
-                    register_number
+                    register_number,
+                    function_id
                 })
                 .where({ id_profile: profileId })
 

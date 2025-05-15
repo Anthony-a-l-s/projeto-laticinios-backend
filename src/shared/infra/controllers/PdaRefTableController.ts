@@ -23,7 +23,7 @@ module.exports = {
     async create(req: Request, res: Response, next: any) {
 
         try {
-            const {id, pda } = req.body
+            const { id, pda } = req.body
             console.log(id, pda)
             await knex('pda_ref_table').insert({
                 id,

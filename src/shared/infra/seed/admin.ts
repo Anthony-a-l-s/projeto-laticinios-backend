@@ -17,7 +17,7 @@ async function createAdmin() {
         const id = uuidv4();
         const name = "admin";
         const email = "admin";
-        const phone_number = "32970707070";
+        const phone = "32970707070";
         const cpf = "08994704086";
         const password = "@Admin123";
         const active = true
@@ -44,7 +44,7 @@ async function createAdmin() {
             id,
             name,
             email,
-            phone_number,
+            phone,
             cpf,
             password,
             active
@@ -55,6 +55,7 @@ async function createAdmin() {
             const cnpj = "123659872";
             const address = "Campus Universitário, Rua José Lourenço Kelmer, s/n - São Pedro, Juiz de Fora - MG, 36036-900";
             const register_number = "32970707070";
+            const function_id = '123456789'
             const profileActive = 1;
             const user_id = "0744b53c-99a2-4529-b13a-c5f821ba92c0"
 
@@ -64,6 +65,7 @@ async function createAdmin() {
                 cnpj, 
                 address, 
                 register_number, 
+                function_id,
                 active: profileActive, 
                 user_id: id, 
             })

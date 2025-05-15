@@ -5,8 +5,8 @@ export async function up(knex: Knex) {
         table.string('id').primary();
         table.string('name').notNullable();
         table.string('email').notNullable().unique();
-        table.string('phone_number').notNullable();
-        table.string('cpf').notNullable();
+        table.string('phone').notNullable();
+        table.string('cpf').notNullable().unique();;
         table.string('password').notNullable();
         table.integer('active').notNullable();
         table.timestamps(true, true);

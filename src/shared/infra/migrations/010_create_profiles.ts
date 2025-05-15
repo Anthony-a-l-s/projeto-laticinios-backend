@@ -4,9 +4,10 @@ export async function up(knex: Knex) {
     return knex.schema.createTable('profiles', table => {
         table.string('id').primary();
         table.string('type').notNullable();
-        table.string('cnpj').notNullable();
-        table.string('address').notNullable();
-        table.string('register_number').notNullable();
+        table.string('cnpj');
+        table.string('address');
+        table.string('register_number')
+        table.string('function_id').unique();
         table.integer('active').notNullable();
         table.string('user_id').notNullable();
         table.foreign('user_id').references('users.id');

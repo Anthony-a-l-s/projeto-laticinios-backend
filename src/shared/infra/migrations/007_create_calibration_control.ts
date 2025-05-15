@@ -13,6 +13,7 @@ export async function up(knex: Knex) {
         table.date('next_formatted_calibration_date');
         table.string('calibrated_company_name').notNullable();
         table.string('cnpj_calibrated_company').notNullable();
+        table.timestamps(true, true);
     });
 }
 

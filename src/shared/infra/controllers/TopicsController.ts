@@ -37,8 +37,8 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         const { topicId } = req.params
-
-        const result = await knex('topics').where({ checklist_id: topicId })
+        console.log('topic id: ' + topicId)
+        const result = await knex('topics').where({ id: topicId })
 
         return res.json(result)
 
@@ -51,24 +51,29 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { id, title, description, status, active } = req.body
-            const { checklistId} = req.params
+            const { id, title, description, status, active, created_at, updated_at, checklist_id } = req.body
+            console.log(id + " " + title + " " + description + " " + status + " " + active + " " + created_at + " " + updated_at + " " + checklist_id)
+            const { checklistId } = req.params
 
             await knex('topics').insert({
                 id,
                 title,
                 description,
                 status,
-                active, 
+                active,
                 checklist_id: checklistId,
+                created_at: created_at,
+                updated_at: updated_at,
             })
             const topic = {
                 id,
                 title,
                 description,
                 status,
-                active, 
-                checklistId, 
+                active,
+                checklistId,
+                created_at,
+                updated_at,
             }
             return res.status(200).json(topic)
         } catch (error) {
@@ -84,7 +89,7 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const {id, title, description, status, active, } = req.body
+            const { id, title, description, status, active, created_at, updated_at } = req.body
             const { topicId } = req.params
 
             await knex('topics')
@@ -94,6 +99,8 @@ module.exports = {
                     description,
                     status,
                     active,
+                    created_at,
+                    updated_at
                 }).where({ id: topicId })
 
             return res.status(200).json('Tópico editado com sucesso!')
@@ -122,6 +129,50 @@ module.exports = {
             next(error)
         }
     },
+
+    async deleteAndChildrens(req: Request, res: Response, next: any) {
+        const trx = await knex.transaction();
+
+        try {
+            const { topicId } = req.params;
+
+            type Question = { id: string };
+            type PDAEntry = { pda_id: string };
+
+            // 1. Buscar questões do tópico
+            const questions: Question[] = await trx('questions')
+                .where({ topic_id: topicId })
+                .select('id');
+
+            const questionIds = questions.map(q => q.id);
+
+            // 2. Deletar imagens das perguntas
+            await trx('question_images')
+                .whereIn('question_id', questionIds)
+                .del();
+
+            // 3. Buscar e deletar entradas da PDA_questionTable
+            await trx('PDA_questionTable')
+                .whereIn('question_id', questionIds)
+                .del();
+
+            // 4. Deletar perguntas
+            await trx('questions')
+                .whereIn('id', questionIds)
+                .del();
+
+            // 5. Deletar o tópico
+            await trx('topics')
+                .where({ id: topicId })
+                .del();
+
+            await trx.commit();
+            return res.status(200).json('Tópico e dados relacionados excluídos com sucesso');
+        } catch (error) {
+            await trx.rollback();
+            next(error);
+        }
+    }
 
 }
 
