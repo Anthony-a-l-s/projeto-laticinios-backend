@@ -7,6 +7,8 @@ export async function up(knex: Knex) {
         table.foreign('question_id').references('questions.id');
         table.specificType('base64', 'longblob');
         table.text('url').notNullable();
+        table.boolean('deleted_at');
+        table.timestamps(true, true);
 
     });
 }

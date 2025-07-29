@@ -12,6 +12,7 @@ export async function up(knex: Knex) {
         table.string('user_id').notNullable();
         table.foreign('user_id').references('users.id');
         table.string('id_user_responded');
+        table.boolean('deleted_at');
         table.timestamps(true, true);
     });
 }

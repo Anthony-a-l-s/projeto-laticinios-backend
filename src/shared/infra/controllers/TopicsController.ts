@@ -39,7 +39,6 @@ module.exports = {
         const { topicId } = req.params
         console.log('topic id: ' + topicId)
         const result = await knex('topics').where({ id: topicId })
-
         return res.json(result)
 
     },
@@ -51,8 +50,7 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { id, title, description, status, active, created_at, updated_at, checklist_id } = req.body
-            console.log(id + " " + title + " " + description + " " + status + " " + active + " " + created_at + " " + updated_at + " " + checklist_id)
+            const { id, title, description, status, active, created_at, updated_at, deleted_at } = req.body
             const { checklistId } = req.params
 
             await knex('topics').insert({
@@ -61,6 +59,7 @@ module.exports = {
                 description,
                 status,
                 active,
+                deleted_at,
                 checklist_id: checklistId,
                 created_at: created_at,
                 updated_at: updated_at,
@@ -74,6 +73,7 @@ module.exports = {
                 checklistId,
                 created_at,
                 updated_at,
+                deleted_at
             }
             return res.status(200).json(topic)
         } catch (error) {
@@ -89,7 +89,7 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { id, title, description, status, active, created_at, updated_at } = req.body
+            const { id, title, description, status, active, created_at, updated_at, deleted_at } = req.body
             const { topicId } = req.params
 
             await knex('topics')
@@ -100,12 +100,50 @@ module.exports = {
                     status,
                     active,
                     created_at,
-                    updated_at
+                    updated_at,
+                    deleted_at
                 }).where({ id: topicId })
 
             return res.status(200).json('Tópico editado com sucesso!')
         } catch (error) {
             next(error)
+        }
+    },
+
+    async markAsDeleted(req: Request, res: Response, next: any) {
+        const trx = await knex.transaction();
+
+        try {
+            const { topicId } = req.params;
+
+            // Marcar tópico como excluído
+            await trx('topics')
+                .update({ deleted_at: true })
+                .where({ id: topicId });
+
+            // Buscar as perguntas do tópico
+            const questionIds = await trx('questions')
+                .where({ topic_id: topicId })
+                .pluck('id');
+
+            if (questionIds.length > 0) {
+                // Marcar perguntas como excluídas
+                await trx('questions')
+                    .update({ deleted_at: true })
+                    .whereIn('id', questionIds);
+
+                // Marcar imagens das perguntas
+                await trx('question_images')
+                    .update({ deleted_at: true })
+                    .whereIn('question_id', questionIds);
+
+            }
+
+            await trx.commit();
+            return res.status(200).json('Tópico e dependências marcados como excluídos com sucesso');
+        } catch (error) {
+            await trx.rollback();
+            next(error);
         }
     },
 

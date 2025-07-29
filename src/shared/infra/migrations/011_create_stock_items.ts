@@ -12,6 +12,8 @@ export async function up(knex: Knex) {
         table.date('validade').notNullable();
         table.string('info').notNullable;
         table.string('dataFormatada').notNullable();
+        table.boolean('deleted_at');
+        table.timestamps(true, true);
     });
 }
 

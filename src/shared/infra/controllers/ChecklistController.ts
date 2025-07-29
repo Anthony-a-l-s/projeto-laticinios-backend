@@ -111,6 +111,7 @@ module.exports = {
                     'checklists.id_user_responded as checklist_id_user_responded',
                     'checklists.accessMask as checklist_accessMask',
                     'checklists.favorite as checklist_favorite',
+                    'checklists.deleted_at as checklist_deleted_at',
 
                     'topics.id as topic_id',
                     'topics.title as topic_title',
@@ -119,6 +120,7 @@ module.exports = {
                     'topics.updated_at as topic_updated_at',
                     'topics.status as topic_status',
                     'topics.active as topic_active',
+                    'topics.deleted_at as topic_deleted_at',
 
                     'questions.id as question_id',
                     'questions.title as question_title',
@@ -128,6 +130,7 @@ module.exports = {
                     'questions.active as question_active',
                     'questions.value as question_value',
                     'questions.comment as question_comment',
+                    'questions.deleted_at as question_deleted_at',
 
                     'question_images.id as question_image_id',
                     'question_images.base64 as question_image_base64',
@@ -151,7 +154,8 @@ module.exports = {
                 .leftJoin('PDA_questionTable', 'PDA_questionTable.question_id', 'questions.id')
                 .leftJoin('pda_table', 'pda_table.id', 'PDA_questionTable.pda_id')
                 .leftJoin('pda_ref_table', 'pda_ref_table.id', 'pda_table.pda_ref_table_id')
-                .where('checklists.id', checklistId);
+                .where('checklists.id', checklistId)
+                .andWhereNot('checklists.deleted_at', 1);
 
             const checklists = result.reduce((acc: any, row: any) => {
                 // Encontrar ou criar o checklist
@@ -165,6 +169,7 @@ module.exports = {
                         active: row.checklist_active,
                         favorite: row.checklist_favorite,
                         accessMask: row.checklist_accessMask,
+                        user_id: row.checklist_user_id,
                         created_at: row.checklist_created_at,
                         updated_at: row.checklist_updated_at,
                         topics: [],
@@ -272,7 +277,7 @@ module.exports = {
     //funcao para criar um checklist
     async create(req: Request, res: Response, next: any) {
         try {
-            const { id, title, description, status, active, favorite, created_at, updated_at, accessMask } = req.body
+            const { id, title, description, status, active, favorite, created_at, updated_at, accessMask, deleted_at } = req.body
             console.log('Criando um cheklist')
             console.log(id + ' ' + title + ' ' + description + ' ' + status + ' ' + active + ' ' + accessMask)
             const { userId } = req.params
@@ -287,6 +292,7 @@ module.exports = {
                 created_at,
                 updated_at,
                 accessMask,
+                deleted_at,
                 user_id: userId,
             })
             const checklist = {
@@ -299,6 +305,7 @@ module.exports = {
                 created_at,
                 updated_at,
                 accessMask,
+                deleted_at,
                 userId,
             }
             return res.status(201).json(checklist)
@@ -312,7 +319,7 @@ module.exports = {
     //funcao para atualizar um checklist
     async update(req: Request, res: Response, next: any) {
         try {
-            const { title, description, status, active, favorite, accessMask, created_at, updated_at, } = req.body
+            const { title, description, status, active, favorite, accessMask, created_at, updated_at, deleted_at } = req.body
             const { checklistId } = req.params
             console.log(checklistId + ' ' + title + ' ' + description + ' ' + status + ' ' + active + ' ' + favorite + ' ' + accessMask + ' ' + created_at + ' ' + updated_at)
             await knex('checklists')
@@ -324,7 +331,8 @@ module.exports = {
                     favorite,
                     accessMask,
                     created_at,
-                    updated_at
+                    updated_at,
+                    deleted_at
                 })
                 .where({ id: checklistId })
             console.log(checklistId)
@@ -346,6 +354,57 @@ module.exports = {
             return res.status(200).json('Checklist respondido edidado com sucesso')
         } catch (error) {
             next(error)
+        }
+    },
+
+    async markAsDeleted(req: Request, res: Response, next: any) {
+        console.log('tamo deletando tamo deletando')
+        const trx = await knex.transaction();
+
+        try {
+            const { checklistId } = req.params;
+
+            // Marcar o checklist como excluído
+            await trx('checklists')
+                .update({ deleted_at: true })
+                .where({ id: checklistId });
+
+            // Buscar os tópicos do checklist
+            const topicIds = await trx('topics')
+                .where({ checklist_id: checklistId })
+                .pluck('id');
+
+            if (topicIds.length > 0) {
+                // Marcar tópicos como excluídos
+                await trx('topics')
+                    .update({ deleted_at: true })
+                    .whereIn('id', topicIds);
+
+                // Buscar as perguntas associadas
+                const questionIds = await trx('questions')
+                    .whereIn('topic_id', topicIds)
+                    .pluck('id');
+
+                if (questionIds.length > 0) {
+                    // Marcar perguntas como excluídas
+                    await trx('questions')
+                        .update({ deleted_at: true })
+                        .whereIn('id', questionIds);
+
+                    // Marcar imagens das perguntas
+                    await trx('question_images')
+                        .update({ deleted_at: true })
+                        .whereIn('question_id', questionIds);
+
+                    // Marcar referências de planos de ação (se aplicável)
+                }
+            }
+
+            await trx.commit();
+            return res.status(200).json('Checklist e dependências marcados como excluídos com sucesso');
+        } catch (error) {
+            await trx.rollback();
+            next(error);
         }
     },
 

@@ -7,6 +7,7 @@ export async function up(knex: Knex) {
         table.foreign('pda_id').references('pda_tables_id');
         table.string('question_id').notNullable();
         table.foreign('question_id').references('questions.id');
+        table.boolean('deleted_at');
         table.timestamps(true, true);
     });
 }

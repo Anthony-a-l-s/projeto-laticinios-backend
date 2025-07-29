@@ -60,6 +60,7 @@ module.exports = {
                 base64,
                 url,
                 question_id: questionId,
+                deleted_at: false
             })
 
             const question = {

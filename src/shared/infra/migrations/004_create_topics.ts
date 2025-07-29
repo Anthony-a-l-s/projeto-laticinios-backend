@@ -9,6 +9,7 @@ export async function up(knex: Knex) {
         table.boolean('active').notNullable();
         table.string('checklist_id').notNullable();
         table.foreign('checklist_id').references('checklists.id');
+        table.boolean('deleted_at');
         table.timestamps(true, true);
     });
 }

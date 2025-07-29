@@ -10,6 +10,7 @@ export async function up(knex: Knex) {
         table.string('comment');
         table.string('topic_id').notNullable();
         table.foreign('topic_id').references('topics.id');
+        table.boolean('deleted_at');
         table.timestamps(true, true);
     });
 }

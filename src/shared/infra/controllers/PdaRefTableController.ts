@@ -27,7 +27,8 @@ module.exports = {
             console.log(id, pda)
             await knex('pda_ref_table').insert({
                 id,
-                pda
+                pda,
+                deleted_at: false
             })
             const pdaRefTable = {
                 id,

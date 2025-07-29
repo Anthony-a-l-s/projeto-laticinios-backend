@@ -28,7 +28,8 @@ module.exports = {
                 id,
                 responsible,
                 deadline,
-                pda_ref_table_id
+                pda_ref_table_id,
+                deleted_at: false
             })
             const pdaTable = {
                 id,

@@ -93,6 +93,7 @@ routes.put("/checklists_edit/:checklistId", checklistController.update)
 routes.put("/checklists_respond/:checklistId", checklistController.responded)
 //routes.delete("/checklists_delete/:checklistId", checklistController.delete)
 routes.delete("/checklists_deleteAndChildrens/:checklistId", checklistController.deleteAndChildrens)
+routes.put("/checklists_delete/:checklistId", checklistController.markAsDeleted)
 
 //TOPIC ROUTES
 routes.get('/topics', TopicsController.index)
@@ -103,6 +104,7 @@ routes.post("/topics_create/:checklistId", TopicsController.create)
 routes.put("/topics_edit/:topicId", TopicsController.update)
 //routes.delete("/topics_delete/:topicId", TopicsController.delete)
 routes.delete("/topics_deleteAndChildrens/:topicId", TopicsController.deleteAndChildrens)
+routes.put("/topics_delete/:topicId", TopicsController.markAsDeleted)
 
 //QUESTIONS ROUTES
 routes.get("/allQuestions", QuestionsController.index)
@@ -112,6 +114,7 @@ routes.get("/question/:questionId", QuestionsController.oneQuestion)
 routes.post("/questions_create/:topicId", QuestionsController.create)
 routes.put("/questions_edit/:questionId", QuestionsController.update)
 routes.delete("/question_delete/:questionId", QuestionsController.delete)
+routes.put("/questions_delete/:questionId", QuestionsController.markAsDeleted)
 //routes.delete("/question_deleteAndChildrens/:questionId", QuestionsController.deleteAndChildrens)
 
 //PDA_REF_TABLE ROUTES

@@ -54,9 +54,8 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { id, title, status, value, active, comment, created_at, updated_at, topic_id } = req.body
+            const { id, title, status, value, active, comment, created_at, updated_at, topic_id, deleted_at } = req.body
             const { topicId } = req.params
-            console.log(id + " " + title + " " + status + " " + value + " " + active + " " + comment + " " + created_at + " " + updated_at + " " + topic_id)
             await knex('questions').insert({
                 id,
                 title,
@@ -64,6 +63,7 @@ module.exports = {
                 value,
                 active,
                 comment,
+                deleted_at,
                 created_at: created_at,
                 updated_at: updated_at,
                 topic_id: topic_id,
@@ -78,6 +78,7 @@ module.exports = {
                 comment,
                 created_at,
                 updated_at,
+                deleted_at,
                 topicId,
             }
             return res.status(201).json(question)
@@ -102,23 +103,54 @@ module.exports = {
                 status,
                 value,
                 active,
-                comment
+                comment,
+                created_at,
+                updated_at,
+                deleted_at
             } = req.body
             const { questionId } = req.params
 
             await knex('questions')
                 .update({
                     id,
+                    title,
                     status,
                     value,
                     active,
-                    comment
+                    comment,
+                    created_at,
+                    updated_at,
+                    deleted_at
                 })
                 .where({ id: questionId })
 
             return res.status(200).json('Pergunta editada com sucesso')
         } catch (error) {
             next(error)
+        }
+    },
+
+    async markAsDeleted(req: Request, res: Response, next: any) {
+        const trx = await knex.transaction();
+
+        try {
+            const { questionId } = req.params;
+
+            // Marcar pergunta como excluída
+            await trx('questions')
+                .update({ deleted_at: true })
+                .where({ id: questionId });
+
+            // Marcar imagens associadas
+            await trx('question_images')
+                .update({ deleted_at: true })
+                .where({ question_id: questionId });
+
+            await trx.commit();
+            return res.status(200).json('Pergunta e dependências marcadas como excluídas com sucesso');
+        } catch (error) {
+            await trx.rollback();
+            next(error);
         }
     },
 
