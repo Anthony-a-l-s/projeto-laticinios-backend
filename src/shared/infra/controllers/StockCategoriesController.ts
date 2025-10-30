@@ -16,7 +16,7 @@ module.exports = {
     async UmStockCategory(req: Request, res: Response) {
         const { stockCategoryId } = req.params
 
-        const result = await knex('sotck_category').where({ id: stockCategoryId  })
+        const result = await knex('sotck_category').where({ id: stockCategoryId })
 
         return res.json(result)
 
@@ -28,16 +28,25 @@ module.exports = {
         try {
             const {
                 id,
-                nome
+                nome,
+                created_at,
+                updated_at,
+                deleted_at
             } = req.body
 
             await knex('sotck_category').insert({
                 id,
-                nome
+                nome,
+                created_at,
+                updated_at,
+                deleted_at
             })
             const sotck_category = {
                 id,
-                nome
+                nome,
+                created_at,
+                updated_at,
+                deleted_at
             }
             return res.status(201).json(sotck_category)
         } catch (error) {
@@ -49,15 +58,21 @@ module.exports = {
     //funcao para atualizar um checklist
     async update(req: Request, res: Response, next: any) {
         try {
-            const { 
+            const {
                 id,
-                nome
+                nome,
+                created_at,
+                updated_at,
+                deleted_at
             } = req.body
             const { stockCategoryId } = req.params
             await knex('sotck_category')
                 .update({
                     id,
-                    nome
+                    nome,
+                    created_at,
+                    updated_at,
+                    deleted_at
                 })
                 .where({ id: stockCategoryId })
             return res.status(200).json('Categoria de estoque editado com sucesso')

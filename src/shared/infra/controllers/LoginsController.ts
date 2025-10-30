@@ -26,6 +26,17 @@ function testPassword(password: string) {
 
 module.exports = {
 
+    async connectionTest(req: Request, res: Response) {
+        res.header('Access-Control-Allow-Origin', '*')
+        res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+        res.header('Access-Control-Allow-Credentials', 'true')
+        res.header('Access-Control-Max-Age', '86400')
+
+        return res.json('conexão feita com sucesso!')
+
+    },
+
     //funcao para retornar todos os logins cadastrado
     async index(req: Request, res: Response) {
         res.header('Access-Control-Allow-Origin', '*')

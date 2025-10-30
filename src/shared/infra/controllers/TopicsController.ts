@@ -10,7 +10,7 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         const result = await knex('topics')
-
+        console.log('Numero de tópicos: ' + result.length)
         return res.json(result)
 
     },

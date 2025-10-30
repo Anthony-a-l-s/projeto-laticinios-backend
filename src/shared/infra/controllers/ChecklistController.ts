@@ -80,7 +80,7 @@ module.exports = {
 
     async ChecklistOfUser(req: Request, res: Response) {
         const { userId } = req.params
-        const result = await knex('checklists').where({ user_id: userId })
+        const result = await knex('checklists').where({ user_id: userId });
         return res.json(result)
     },
 
@@ -105,13 +105,14 @@ module.exports = {
                     'checklists.description as checklist_description',
                     'checklists.created_at as checklist_created_at',
                     'checklists.updated_at as checklist_updated_at',
+                    'checklists.deleted_at as checklist_deleted_at',
                     'checklists.status as checklist_status',
                     'checklists.active as checklist_active',
                     'checklists.user_id as checklist_user_id',
                     'checklists.id_user_responded as checklist_id_user_responded',
                     'checklists.accessMask as checklist_accessMask',
                     'checklists.favorite as checklist_favorite',
-                    'checklists.deleted_at as checklist_deleted_at',
+
 
                     'topics.id as topic_id',
                     'topics.title as topic_title',
@@ -134,7 +135,8 @@ module.exports = {
 
                     'question_images.id as question_image_id',
                     'question_images.base64 as question_image_base64',
-                    'question_images.url as question_image_uri',
+                    'question_images.uri as question_image_uri',
+                    'question_images.question_id as question_image_question_id',
 
                     'PDA_questionTable.id as pda_question_id',
                     'PDA_questionTable.pda_id as pda_id',
@@ -155,7 +157,6 @@ module.exports = {
                 .leftJoin('pda_table', 'pda_table.id', 'PDA_questionTable.pda_id')
                 .leftJoin('pda_ref_table', 'pda_ref_table.id', 'pda_table.pda_ref_table_id')
                 .where('checklists.id', checklistId)
-                .andWhereNot('checklists.deleted_at', 1);
 
             const checklists = result.reduce((acc: any, row: any) => {
                 // Encontrar ou criar o checklist
@@ -172,6 +173,7 @@ module.exports = {
                         user_id: row.checklist_user_id,
                         created_at: row.checklist_created_at,
                         updated_at: row.checklist_updated_at,
+                        deleted_at: row.checklist_deleted_at,
                         topics: [],
                     };
                     acc.push(checklist);
@@ -189,6 +191,7 @@ module.exports = {
                             active: row.topic_active,
                             created_at: row.topic_created_at,
                             updated_at: row.topic_updated_at,
+                            deleted_at: row.topic_deleted_at,
                             checklist_id: row.checklist_id,
                             questions: [],
                         };
@@ -208,6 +211,7 @@ module.exports = {
                                 comment: row.question_comment,
                                 created_at: row.question_created_at,
                                 updated_at: row.question_updated_at,
+                                deleted_at: row.question_deleted_at,
                                 topic_id: row.topic_id,
                                 images: [],
                                 pda: [],
@@ -218,30 +222,46 @@ module.exports = {
                             topic.questions.push(question);
                         }
 
-                        // Adicionar imagem à questão
+                        // Adicionar imagem à questão (COM VERIFICAÇÃO)
                         if (row.question_image_id) {
-                            question.images.push({
-                                id: row.question_image_id,
-                                base64: row.question_image_base64,
-                                url: row.question_image_url,
-                            });
+                            // <-- VERIFICAÇÃO ANTI-DUPLICIDADE
+                            const imageExists = question.images.some((img: any) => img.id === row.question_image_id);
+                            if (!imageExists) {
+                                question.images.push({
+                                    id: row.question_image_id,
+                                    base64: row.question_image_base64,
+                                    uri: row.question_image_uri,
+                                    question_id: row.question_id
+                                });
+                            }
                         }
 
+                        // Adicionar pda_question (COM VERIFICAÇÃO)
                         if (row.pda_question_id) {
-                            question.pda_question.push({
-                                id: row.pda_question_id,
-                                pda_id: row.pda_table_id,
-                                question_id: row.question_id
-                            });
-                        }
-                        if (row.pda_ref_table_id) {
-                            question.pda_ref.push({
-                                id: row.pda_ref_table_id,
-                                pda: row.pda_ref_table_pda
-                            });
+                            // <-- VERIFICAÇÃO ANTI-DUPLICIDADE
+                            const pdaQuestionExists = question.pda_question.some((pdaQ: any) => pdaQ.id === row.pda_question_id);
+                            if (!pdaQuestionExists) {
+                                question.pda_question.push({
+                                    id: row.pda_question_id,
+                                    pda_id: row.pda_table_id,
+                                    question_id: row.question_id
+                                });
+                            }
                         }
 
-                        // Adicionar PDA à questão
+                        // Adicionar pda_ref (COM VERIFICAÇÃO)
+                        if (row.pda_ref_table_id) {
+                            // <-- VERIFICAÇÃO ANTI-DUPLICIDADE
+                            const pdaRefExists = question.pda_ref.some((ref: any) => ref.id === row.pda_ref_table_id);
+                            if (!pdaRefExists) {
+                                question.pda_ref.push({
+                                    id: row.pda_ref_table_id,
+                                    pda: row.pda_ref_table_pda
+                                });
+                            }
+                        }
+
+                        // Adicionar PDA à questão (SEU CÓDIGO AQUI JÁ ESTAVA CORRETO)
                         if (row.pda_id) {
                             let pda = question.pda.find((p: any) => p.id === row.pda_table_id);
                             if (!pda) {
@@ -260,7 +280,6 @@ module.exports = {
 
                 return acc;
             }, []);
-
             return res.json(checklists)
 
             //console.log(result)
@@ -534,7 +553,7 @@ module.exports = {
                     'questions.updated_at as question_updated_at',
                     'question_images.id as question_image_id',
                     'question_images.base64 as question_image_base64',
-                    'question_images.url as question_image_url',
+                    'question_images.uri as question_image_uri',
                     'PDA_questionTable.id as pda_question_id',
                     'PDA_questionTable.pda_id as pda_id',
                     'pda_table.id as pda_table_id',
@@ -615,7 +634,7 @@ module.exports = {
                             question.images.push({
                                 id: row.question_image_id,
                                 base64: row.question_image_base64,
-                                url: row.question_image_url,
+                                uri: row.question_image_uri,
                                 question_id: row.question_id
                             });
                         }

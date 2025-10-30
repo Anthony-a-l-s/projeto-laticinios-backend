@@ -10,7 +10,10 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         const result = await knex('question_images')
-
+        console.log('Numero de imagens de perguntas: ' + result.length)
+        for (let i = 0; i < result.length; i++) {
+            console.log('Imagem ' + (i + 1) + ' ID: ' + result[i].id)
+        }
         return res.json(result)
 
     },
@@ -52,26 +55,25 @@ module.exports = {
         res.header('Access-Control-Allow-Credentials', 'true')
         res.header('Access-Control-Max-Age', '86400')
         try {
-            const { id, base64, url } = req.body
+            const { id, base64, uri } = req.body
             const { questionId } = req.params
-
             await knex('question_images').insert({
                 id,
                 base64,
-                url,
+                uri,
                 question_id: questionId,
-                deleted_at: false
             })
 
             const question = {
                 id,
                 base64,
-                url,
+                uri,
                 questionId,
             }
+            console.log('Imagem de pergunta criada com sucesso')
             return res.status(201).json(question)
         } catch (error) {
-            console.log(error)
+            //console.log(error)
             next(error)
         }
     },
@@ -88,7 +90,7 @@ module.exports = {
             const {
                 id,
                 base64,
-                url,
+                uri,
             } = req.body
             const { questionImageId } = req.params
 
@@ -96,7 +98,7 @@ module.exports = {
                 .update({
                     id,
                     base64,
-                    url,
+                    uri,
                 })
                 .where({ id: questionImageId })
 

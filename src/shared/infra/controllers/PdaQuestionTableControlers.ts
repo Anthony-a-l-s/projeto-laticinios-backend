@@ -6,7 +6,7 @@ module.exports = {
 
 
         const result = await knex('PDA_questionTable')
-
+        console.log('Numero de registros na tabela PDA_questionTable: ' + result.length)
         return res.json(result)
 
     },
@@ -28,7 +28,6 @@ module.exports = {
                 id,
                 pda_id,
                 question_id,
-                deleted_at: false
             })
             const pdaRefTable = {
                 id,

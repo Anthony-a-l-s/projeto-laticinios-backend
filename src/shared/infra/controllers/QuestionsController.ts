@@ -41,8 +41,8 @@ module.exports = {
         const { questionId } = req.params
 
         const result = await knex('questions').where({ id: questionId })
-
-        return res.json(result).status(200)
+        console.log('question retornada: ', result)
+        return res.json(result)
 
     },
 

@@ -59,6 +59,9 @@ routes.post("/login", LoginController.create)
 routes.put("/login/:loginId", LoginController.update)
 routes.delete("/login/:loginId", LoginController.delete)
 routes.get("/login", LoginController.login)
+routes.get("/connectionTest", LoginController.connectionTest)
+
+
 
 //USER ROUTES
 routes.get("/users",/*ensureAdmin ,*/UserController.index)
@@ -143,7 +146,7 @@ routes.delete("/pda_tables_delete/:pdaTableId", PdaTableController.delete)
 routes.get("/questions_images", QestionImagesController.index)
 //Pegando as imagens de uma pergunta
 routes.get("/questions_images/:questionId", QestionImagesController.imagesforQuestion)
-routes.get("/questions_images/:questionImageId", QestionImagesController.oneQestionImage)
+routes.get("/questions_image/:questionImageId", QestionImagesController.oneQestionImage)
 routes.post("/questions_images_create/:questionId", QestionImagesController.create)
 routes.put("/questions_images/:questionImageId", QuestionsController.update)
 routes.delete("/questions_images/:questionImageId", QuestionsController.delete)
@@ -151,7 +154,7 @@ routes.delete("/questions_images/:questionImageId", QuestionsController.delete)
 //CALIBRATION CONTROL ROUTES
 routes.get("/calibration_controls", CalibrationControlController.index)
 routes.get("/calibration_control/:calibrationControlId", CalibrationControlController.UmCalibrationControl)
-routes.post("/calibration_control/", CalibrationControlController.create)
+routes.post("/calibration_control", CalibrationControlController.create)
 routes.put("/calibration_control_edit/:calibrationControlId", CalibrationControlController.update)
 routes.delete("/calibration_control_delete/:calibrationControlId", CalibrationControlController.delete)
 
@@ -165,7 +168,7 @@ routes.delete("/stock_category_delete/:stockCategoryId", StockCategoriesControll
 //STOCK ITEMS ROUTES
 routes.get("/stock_items", StockItemsComntroller.index)
 routes.get("/stock_item/:stockItemId", StockItemsComntroller.UmStockItem)
-routes.get("/stock_items/:stockCategoryId", StockItemsComntroller.stockItemByCategory)
+routes.get("/stock_items_to_category/:stockCategoryId", StockItemsComntroller.stockItemByCategory)
 routes.post("/stock_items_create/", StockItemsComntroller.create)
 routes.put("/stock_items_edit/:stockItemId", StockItemsComntroller.update)
 routes.delete("/stock_items_delete/:stockItemId", StockItemsComntroller.delete)

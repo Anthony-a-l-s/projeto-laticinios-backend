@@ -43,6 +43,9 @@ function verifyCpf(cpf: string) {
 
 module.exports = {
 
+
+
+
     //funcao para listar todos os usuarios cadastrados 
     async index(req: Request, res: Response) {
         res.header('Access-Control-Allow-Origin', '*')

@@ -25,49 +25,61 @@ module.exports = {
 
     //funcao para criar um checklist
     async create(req: Request, res: Response, next: any) {
+        console.log('criando controle de calibração ...')
+        console.log(req.body)
         try {
             const {
                 id,
-                instrument_name,
-                active,
-                ifnfo_isntrument,
-                identification_code,
-                calibration_date,
-                formatted_calibration_date,
-                next_calibration_date,
-                next_formatted_calibration_date,
-                calibrated_company_name,
-                cnpj_calibrated_company
+                nomeInstrumento,
+                isActive,
+                infoInstrumento,
+                codigoIdentificacao,
+                dataCalibracao,
+                dataCalibracaoFormatada,
+                dataProximaCalibracao,
+                dataProximaCalibracaoFormatada,
+                nomeEmpresaCalibrou,
+                cnpjEmpresaCalibrou,
+                created_at,
+                updated_at,
+                deleted_at,
             } = req.body
-
+            console.log(req.body)
             await knex('calibration_control').insert({
                 id,
-                instrument_name,
-                active,
-                ifnfo_isntrument,
-                identification_code,
-                calibration_date,
-                formatted_calibration_date,
-                next_calibration_date,
-                next_formatted_calibration_date,
-                calibrated_company_name,
-                cnpj_calibrated_company
+                nomeInstrumento,
+                isActive,
+                infoInstrumento,
+                codigoIdentificacao,
+                dataCalibracao,
+                dataCalibracaoFormatada,
+                dataProximaCalibracao,
+                dataProximaCalibracaoFormatada,
+                nomeEmpresaCalibrou,
+                cnpjEmpresaCalibrou,
+                created_at,
+                updated_at,
+                deleted_at,
             })
             const calibration_control = {
                 id,
-                instrument_name,
-                active,
-                ifnfo_isntrument,
-                identification_code,
-                calibration_date,
-                formatted_calibration_date,
-                next_calibration_date,
-                next_formatted_calibration_date,
-                calibrated_company_name,
-                cnpj_calibrated_company
+                nomeInstrumento,
+                isActive,
+                infoInstrumento,
+                codigoIdentificacao,
+                dataCalibracao,
+                dataCalibracaoFormatada,
+                dataProximaCalibracao,
+                dataProximaCalibracaoFormatada,
+                nomeEmpresaCalibrou,
+                cnpjEmpresaCalibrou,
+                created_at,
+                updated_at,
+                deleted_at,
             }
             return res.status(201).json(calibration_control)
         } catch (error) {
+            console.log(error)
             next(error)
         }
     },
@@ -75,39 +87,46 @@ module.exports = {
 
     //funcao para atualizar um checklist
     async update(req: Request, res: Response, next: any) {
+        console.log('atualizando controle de calibração ...')
         try {
-            const { 
+            const {
                 id,
-                instrument_name,
-                active,
-                ifnfo_isntrument,
-                identification_code,
-                calibration_date,
-                formatted_calibration_date,
-                next_calibration_date,
-                next_formatted_calibration_date,
-                calibrated_company_name,
-                cnpj_calibrated_company 
+                nomeInstrumento,
+                isActive,
+                infoInstrumento,
+                codigoIdentificacao,
+                dataCalibracao,
+                dataCalibracaoFormatada,
+                dataProximaCalibracao,
+                dataProximaCalibracaoFormatada,
+                nomeEmpresaCalibrou,
+                cnpjEmpresaCalibrou,
+                created_at,
+                updated_at,
+                deleted_at,
             } = req.body
             const { calibrationControlId } = req.params
             await knex('calibration_control')
                 .update({
                     id,
-                    instrument_name,
-                    active,
-                    ifnfo_isntrument,
-                    identification_code,
-                    calibration_date,
-                    formatted_calibration_date,
-                    next_calibration_date,
-                    next_formatted_calibration_date,
-                    calibrated_company_name,
-                    cnpj_calibrated_company
-
+                    nomeInstrumento,
+                    isActive,
+                    infoInstrumento,
+                    codigoIdentificacao,
+                    dataCalibracao,
+                    dataCalibracaoFormatada,
+                    dataProximaCalibracao,
+                    dataProximaCalibracaoFormatada,
+                    nomeEmpresaCalibrou,
+                    cnpjEmpresaCalibrou,
+                    created_at,
+                    updated_at,
+                    deleted_at,
                 })
                 .where({ id: calibrationControlId })
             return res.status(200).json('Controle de calibração editado com sucesso')
         } catch (error) {
+            console.log(error)
             next(error)
         }
     },
