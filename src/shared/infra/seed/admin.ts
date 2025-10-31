@@ -3,9 +3,11 @@ const bcrypt = require('bcrypt')
 const knex = require('../knex/connection')
 const { v4: uuidv4 } = require('uuid');
 const UserController = require('../controllers/UsersController')
+const GlobalContrller = require('../controllers/GlobalContrller')
 
 async function createAdmin() {
     console.log('Criando um usuário em caso de primeira conexão')
+    await GlobalContrller.verifyDataDeleted();
     try {
 
         const users = await knex('users')
@@ -48,7 +50,7 @@ async function createAdmin() {
             cpf,
             password,
             active
-        }).then(async()=>{
+        }).then(async () => {
 
             const profileId = uuidv4();
             const type = "Empresa";
@@ -62,18 +64,18 @@ async function createAdmin() {
             await knex('profiles').insert({
                 id: profileId,
                 type,
-                cnpj, 
-                address, 
-                register_number, 
+                cnpj,
+                address,
+                register_number,
                 function_id,
-                active: profileActive, 
-                user_id: id, 
+                active: profileActive,
+                user_id: id,
             })
-    
+
         })
         console.log("usuario criado com sucesso")
 
-        
+
         /*if (admin.length == 0) {
             //Encryptagem de senha
             const hash = await bcrypt.hash(password, 10)

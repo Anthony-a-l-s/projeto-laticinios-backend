@@ -47,11 +47,13 @@ const StockCategoriesController = require('../controllers/StockCategoriesControl
 const StockItemsComntroller = require('../controllers/StockItemsController')
 const ProfileController = require('../controllers/ProfileController')
 const QestionImagesController = require('../controllers/QuestionImagesController')
+const GlobalController = require('../controllers/GlobalContrller');
 
 var cors = require('cors')
 const uploadResponsesImages = multer(uploadConfig.upload("./tmp/responseImages"));
 
-
+//TESTE ROUTES
+routes.get("/testing", GlobalController.verifyDataDeleted)
 
 //LOGINS ROUTES
 routes.get("/login", ensureAuthenticate, LoginController.index)
